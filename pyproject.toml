@@ -40,6 +40,9 @@ dependencies = [
     "httpx>=0.27.0",
     "tomli-w>=1.0.0",
     "typing-extensions>=4.12.0",
+    "psutil>=5.9.0",
+    "pycaw>=20260927; sys_platform == 'win32'",
+    "comtypes>=1.4.17; sys_platform == 'win32'",
 ]
 
 [project.optional-dependencies]
@@ -51,6 +54,7 @@ dev = [
     "pytest-qt>=4.4.0",
     "pytest-mock>=3.14.0",
     "pre-commit>=3.7.1",
+    "types-psutil>=5.9.0",
 ]
 
 [project.urls]
@@ -121,6 +125,8 @@ module = [
     "rapidfuzz.*",
     "PySide6.*",
     "scipy.*",
+    "pycaw.*",
+    "comtypes.*",
 ]
 ignore_missing_imports = true
 

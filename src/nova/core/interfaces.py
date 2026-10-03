@@ -112,6 +112,14 @@ class PlatformAdapterProtocol(Protocol):
         """Return to previous media track."""
         ...
 
+    def media_stop(self) -> ActionResult:
+        """Stop active media playback."""
+        ...
+
+    def set_app_volume(self, app_name: str, percent: int) -> ActionResult:
+        """Set volume percentage for a specific running application session."""
+        ...
+
     def lock_workstation(self) -> ActionResult:
         """Lock the operating system user session."""
         ...

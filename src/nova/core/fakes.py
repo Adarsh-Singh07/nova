@@ -6,6 +6,7 @@ and Platform adapters for unit testing and headless --text CLI execution.
 
 from __future__ import annotations
 
+import os
 import re
 from typing import Any
 
@@ -256,6 +257,17 @@ class FakePlatformAdapter(PlatformAdapterProtocol):
     def media_previous(self) -> ActionResult:
         return ActionResult(success=True, message="Media skipped to previous")
 
+    def media_stop(self) -> ActionResult:
+        self.media_playing = False
+        return ActionResult(success=True, message="Media playback stopped")
+
+    def set_app_volume(self, app_name: str, percent: int) -> ActionResult:
+        return ActionResult(
+            success=True,
+            message=f"Adjusted volume for {app_name} to {percent}%.",
+            data={"app_name": app_name, "percent": percent},
+        )
+
     def lock_workstation(self) -> ActionResult:
         self.is_locked = True
         return ActionResult(success=True, message="Workstation locked")
@@ -269,6 +281,22 @@ class FakePlatformAdapter(PlatformAdapterProtocol):
         return ActionResult(success=True, message=f"Launched {app_name_or_target}")
 
     def close_app(self, app_name_or_target: str) -> ActionResult:
+        lower = app_name_or_target.lower().strip()
+        stem, _ = os.path.splitext(lower)
+        if lower in (
+            "explorer.exe",
+            "system",
+            "csrss.exe",
+            "systemd",
+            "kwin",
+            "nova",
+            "nova.exe",
+        ) or stem in ("explorer", "nova"):
+            return ActionResult(
+                success=False,
+                message=f"Refused to terminate protected system process: '{app_name_or_target}'.",
+                error="Critical process protection",
+            )
         self.closed_apps.append(app_name_or_target)
         return ActionResult(success=True, message=f"Closed {app_name_or_target}")
 
@@ -279,8 +307,15 @@ class FakePlatformAdapter(PlatformAdapterProtocol):
         )
 
     def open_url(self, url: str) -> ActionResult:
-        self.opened_urls.append(url)
-        return ActionResult(success=True, message=f"Opened {url}")
+        clean = url.strip()
+        if not (clean.startswith("http://") or clean.startswith("https://")):
+            return ActionResult(
+                success=False,
+                message=f"Refused to open invalid URL protocol: '{clean}'",
+                error="Invalid URL protocol",
+            )
+        self.opened_urls.append(clean)
+        return ActionResult(success=True, message=f"Opened {clean}")
 
 
 class FakeConfirmationHandler(ConfirmationHandlerProtocol):

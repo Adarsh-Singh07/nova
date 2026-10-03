@@ -239,6 +239,9 @@ class NovaPipeline:
         if action_id == ActionID.MEDIA_PREVIOUS.value:
             return self.platform.media_previous()
 
+        if action_id == ActionID.MEDIA_STOP.value:
+            return self.platform.media_stop()
+
         if action_id == ActionID.SYSTEM_LOCK.value:
             return self.platform.lock_workstation()
 
@@ -298,11 +301,9 @@ class NovaPipeline:
             )
 
         if action_id == ActionID.VOLUME_APP_SET.value:
-            return ActionResult(
-                success=True,
-                message=f"Adjusted volume for {params.get('app_name')}.",
-                data=params,
-            )
+            app = str(params.get("app_name", ""))
+            pct = int(params.get("percent", 50))
+            return self.platform.set_app_volume(app, pct)
 
         if action_id == ActionID.CONVERSATION_REPLY.value:
             return ActionResult(
