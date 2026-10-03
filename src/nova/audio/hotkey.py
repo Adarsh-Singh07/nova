@@ -53,8 +53,11 @@ class HotkeyListener:
         try:
             import ctypes
 
+            windll = getattr(ctypes, "windll", None)
+            if windll is None:
+                return False
             vk = VK_RCONTROL if "r" in self.hotkey_name else VK_CONTROL
-            state = ctypes.windll.user32.GetAsyncKeyState(vk)
+            state = windll.user32.GetAsyncKeyState(vk)
             # Most significant bit indicates whether key is currently pressed
             return bool(state & 0x8000)
         except Exception:
