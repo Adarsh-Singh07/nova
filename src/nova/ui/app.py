@@ -202,9 +202,12 @@ class NovaApp(QObject):
         except Exception as e:
             logger.warning("Could not start push-to-talk hotkey listener: %s", e)
 
-        # Start minimized or show bubble briefly
-        if not self.settings_mgr.settings.general.start_minimized:
-            self.bubble.show_bubble()
+        # Show bubble on launch with a helpful status cue
+        self.bubble.show_bubble()
+        self.bubble.set_state("idle")
+        self.bubble.set_reply(
+            "NOVA is active in your tray. Press Right Ctrl to speak, or type here."
+        )
 
     def _on_hotkey_pressed(self) -> None:
         """Invoked when user presses push-to-talk key."""

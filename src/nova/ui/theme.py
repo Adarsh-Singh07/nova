@@ -151,24 +151,61 @@ def bubble_stylesheet() -> str:
 
 SETTINGS_STYLESHEET = """
     QDialog {
+        background-color: #1E1E2E;
+        color: #CDD6F4;
         font-size: 13px;
     }
+    QWidget {
+        color: #CDD6F4;
+    }
     QTabWidget::pane {
-        border: 1px solid #3F3F3F;
-        border-radius: 4px;
+        border: 1px solid #45475A;
+        border-radius: 6px;
+        background-color: #181825;
     }
     QTabBar::tab {
-        padding: 6px 14px;
+        background-color: #1E1E2E;
+        color: #A6ADC8;
+        padding: 8px 16px;
         min-width: 80px;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
     }
     QTabBar::tab:selected {
+        background-color: #313244;
         color: #6366F1;
         font-weight: 600;
         border-bottom: 2px solid #6366F1;
     }
+    QGroupBox {
+        color: #CBA6F7;
+        font-weight: bold;
+        border: 1px solid #45475A;
+        border-radius: 6px;
+        margin-top: 10px;
+        padding-top: 14px;
+    }
+    QGroupBox::title {
+        subcontrol-origin: margin;
+        subcontrol-position: top left;
+        padding: 0 6px;
+    }
+    QLineEdit, QComboBox {
+        background-color: #313244;
+        border: 1px solid #45475A;
+        border-radius: 6px;
+        color: #CDD6F4;
+        padding: 6px 10px;
+    }
     QPushButton {
+        background-color: #313244;
+        color: #CDD6F4;
+        border: 1px solid #45475A;
         padding: 6px 16px;
-        border-radius: 4px;
+        border-radius: 6px;
+    }
+    QPushButton:hover {
+        background-color: #45475A;
     }
     QPushButton[role="primary"] {
         background-color: #6366F1;
@@ -180,6 +217,72 @@ SETTINGS_STYLESHEET = """
     }
     QPushButton[role="danger"] {
         color: #EF4444;
+    }
+"""
+
+WIZARD_STYLESHEET = """
+    QWizard {
+        background-color: #181825;
+        color: #CDD6F4;
+        font-family: 'Segoe UI', sans-serif;
+    }
+    QWizardPage {
+        background-color: #181825;
+        color: #CDD6F4;
+    }
+    QWidget {
+        background-color: #181825;
+        color: #CDD6F4;
+    }
+    QLabel {
+        color: #CDD6F4;
+        font-size: 13px;
+        background-color: transparent;
+    }
+    QLineEdit, QComboBox {
+        background-color: #313244;
+        border: 1px solid #45475A;
+        border-radius: 6px;
+        color: #CDD6F4;
+        padding: 6px 10px;
+    }
+    QComboBox QAbstractItemView {
+        background-color: #313244;
+        color: #CDD6F4;
+        selection-background-color: #6366F1;
+    }
+    QCheckBox {
+        color: #CDD6F4;
+        font-size: 13px;
+        spacing: 8px;
+        background-color: transparent;
+    }
+    QPushButton {
+        background-color: #6366F1;
+        color: white;
+        border-radius: 6px;
+        padding: 7px 18px;
+        font-weight: 600;
+        border: none;
+    }
+    QPushButton:hover {
+        background-color: #4F46E5;
+    }
+    QPushButton:disabled {
+        background-color: #313244;
+        color: #6C7086;
+    }
+    QProgressBar {
+        background-color: #313244;
+        border: 1px solid #45475A;
+        border-radius: 6px;
+        text-align: center;
+        color: #CDD6F4;
+        height: 18px;
+    }
+    QProgressBar::chunk {
+        background-color: #10B981;
+        border-radius: 5px;
     }
 """
 
