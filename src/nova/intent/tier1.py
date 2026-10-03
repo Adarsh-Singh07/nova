@@ -14,7 +14,7 @@ import logging
 import re
 from typing import Any
 
-from nova.core.actions import ActionID, AllowlistValidator
+from nova.core.actions import ALLOWED_KEYBOARD_KEYS, ActionID, AllowlistValidator
 from nova.core.interfaces import ActionRequest, IntentEngineProtocol
 from nova.core.settings import NovaSettings
 from nova.intent.apps import DEFAULT_REGISTERED_APPS, AppRegistry
@@ -167,6 +167,8 @@ class Tier1IntentEngine(IntentEngineProtocol):
             self._match_timer,
             self._match_reminder,
             self._match_note,
+            self._match_keyboard_type,
+            self._match_keyboard_press,
             self._match_app_launch_or_close,
         ]
 
@@ -643,6 +645,49 @@ class Tier1IntentEngine(IntentEngineProtocol):
                     parameters={"text": note_text},
                     confidence=0.95,
                     feedback_phrase="Saved your note.",
+                    raw_query=raw,
+                )
+        return None
+
+    def _match_keyboard_type(self, clean: str, raw: str) -> ActionRequest | None:
+        """Match keyboard typing commands (e.g. 'type hello world', 'write hello')."""
+        m = re.match(
+            r"^(?:type|write|type\s+in|type\s+out)\s+(.+)$",
+            clean,
+            re.IGNORECASE,
+        )
+        if m:
+            text_to_type = m.group(1).strip()
+            # If text_to_type is enclosed in quotes, strip them
+            if (text_to_type.startswith('"') and text_to_type.endswith('"')) or (
+                text_to_type.startswith("'") and text_to_type.endswith("'")
+            ):
+                text_to_type = text_to_type[1:-1].strip()
+            if text_to_type:
+                return ActionRequest(
+                    action_id=ActionID.KEYBOARD_TYPE.value,
+                    parameters={"text": text_to_type},
+                    confidence=0.95,
+                    feedback_phrase="Typing text.",
+                    raw_query=raw,
+                )
+        return None
+
+    def _match_keyboard_press(self, clean: str, raw: str) -> ActionRequest | None:
+        """Match keyboard key press commands (e.g. 'press enter', 'hit enter', 'press the tab key')."""
+        m = re.match(
+            r"^(?:press|hit|tap)(?:\s+the)?\s+([a-zA-Z0-9_\-]+)(?:\s+key)?$",
+            clean,
+            re.IGNORECASE,
+        )
+        if m:
+            key_name = m.group(1).lower().strip()
+            if key_name in ALLOWED_KEYBOARD_KEYS:
+                return ActionRequest(
+                    action_id=ActionID.KEYBOARD_PRESS.value,
+                    parameters={"key": key_name},
+                    confidence=0.95,
+                    feedback_phrase=f"Pressing {key_name}.",
                     raw_query=raw,
                 )
         return None

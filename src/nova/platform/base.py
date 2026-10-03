@@ -170,3 +170,7 @@ class BasePlatformAdapter(abc.ABC, PlatformAdapterProtocol):
     def press_key(self, key: str) -> ActionResult:
         """Simulate a single virtual key press in the active window."""
         raise NotImplementedError
+
+    def unmute_current_process(self) -> None:
+        """Ensure current process audio session is unmuted. Default is a no-op."""
+        pass

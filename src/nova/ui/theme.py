@@ -76,7 +76,7 @@ class Palette:
 
 BUBBLE_STYLESHEET_DARK = """
     QFrame#NovaBubble {
-        background-color: rgba(30, 30, 30, 230);
+        background-color: rgba(24, 24, 37, 245);
         border-radius: 12px;
         border: 1px solid rgba(99, 102, 241, 180);
     }
@@ -86,32 +86,77 @@ BUBBLE_STYLESHEET_DARK = """
         font-weight: 600;
         letter-spacing: 0.5px;
     }
+    QPushButton#PinButton, QPushButton#CloseButton {
+        background-color: transparent;
+        color: #A6ADC8;
+        border: none;
+        border-radius: 4px;
+        font-size: 12px;
+        padding: 2px;
+    }
+    QPushButton#PinButton:hover, QPushButton#CloseButton:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #CDD6F4;
+    }
+    QPushButton#PinButton:checked {
+        background-color: rgba(99, 102, 241, 0.4);
+        color: #FFFFFF;
+        border: 1px solid #6366F1;
+    }
+    QPushButton#CloseButton:hover {
+        color: #F87171;
+    }
     QLabel#TranscriptLabel {
-        color: #F0F0F0;
-        font-size: 14px;
+        color: #CDD6F4;
+        font-size: 13px;
+        background-color: rgba(99, 102, 241, 0.18);
+        border: 1px solid rgba(99, 102, 241, 0.3);
+        border-radius: 8px;
+        padding: 6px 10px;
     }
     QLabel#ReplyLabel {
         color: #D1FAE5;
         font-size: 13px;
-        font-style: italic;
+        background-color: rgba(16, 185, 129, 0.15);
+        border: 1px solid rgba(16, 185, 129, 0.25);
+        border-radius: 8px;
+        padding: 6px 10px;
+    }
+    QScrollArea#BubbleScrollArea {
+        background: transparent;
+        border: none;
+    }
+    QScrollBar:vertical {
+        background: transparent;
+        width: 4px;
+        margin: 0px;
+    }
+    QScrollBar::handle:vertical {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 2px;
+        min-height: 20px;
+    }
+    QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+        height: 0px;
     }
     QLineEdit#TextFallback {
-        background-color: rgba(50, 50, 50, 200);
+        background-color: rgba(49, 50, 68, 220);
         border: 1px solid rgba(99, 102, 241, 150);
         border-radius: 6px;
-        color: #F0F0F0;
+        color: #CDD6F4;
         font-size: 13px;
-        padding: 4px 8px;
+        padding: 6px 10px;
         selection-background-color: #6366F1;
     }
     QLineEdit#TextFallback:focus {
-        border-color: #6366F1;
+        border-color: #818CF8;
+        background-color: rgba(49, 50, 68, 255);
     }
 """
 
 BUBBLE_STYLESHEET_LIGHT = """
     QFrame#NovaBubble {
-        background-color: rgba(245, 245, 245, 230);
+        background-color: rgba(245, 245, 245, 245);
         border-radius: 12px;
         border: 1px solid rgba(99, 102, 241, 180);
     }
@@ -121,25 +166,71 @@ BUBBLE_STYLESHEET_LIGHT = """
         font-weight: 600;
         letter-spacing: 0.5px;
     }
+    QPushButton#PinButton, QPushButton#CloseButton {
+        background-color: transparent;
+        color: #6B7280;
+        border: none;
+        border-radius: 4px;
+        font-size: 12px;
+        padding: 2px;
+    }
+    QPushButton#PinButton:hover, QPushButton#CloseButton:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        color: #111827;
+    }
+    QPushButton#PinButton:checked {
+        background-color: rgba(99, 102, 241, 0.2);
+        color: #4338CA;
+        border: 1px solid #6366F1;
+    }
+    QPushButton#CloseButton:hover {
+        color: #EF4444;
+    }
     QLabel#TranscriptLabel {
-        color: #1A1A1A;
-        font-size: 14px;
+        color: #1F2937;
+        font-size: 13px;
+        background-color: rgba(99, 102, 241, 0.1);
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        border-radius: 8px;
+        padding: 6px 10px;
     }
     QLabel#ReplyLabel {
         color: #065F46;
         font-size: 13px;
-        font-style: italic;
+        background-color: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.2);
+        border-radius: 8px;
+        padding: 6px 10px;
+    }
+    QScrollArea#BubbleScrollArea {
+        background: transparent;
+        border: none;
+    }
+    QScrollBar:vertical {
+        background: transparent;
+        width: 4px;
+        margin: 0px;
+    }
+    QScrollBar::handle:vertical {
+        background: rgba(0, 0, 0, 0.15);
+        border-radius: 2px;
+        min-height: 20px;
+    }
+    QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+        height: 0px;
     }
     QLineEdit#TextFallback {
-        background-color: rgba(255, 255, 255, 200);
+        background-color: rgba(255, 255, 255, 220);
         border: 1px solid rgba(99, 102, 241, 150);
         border-radius: 6px;
-        color: #1A1A1A;
+        color: #1F2937;
         font-size: 13px;
-        padding: 4px 8px;
+        padding: 6px 10px;
+        selection-background-color: #6366F1;
     }
     QLineEdit#TextFallback:focus {
         border-color: #6366F1;
+        background-color: #FFFFFF;
     }
 """
 

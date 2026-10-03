@@ -822,3 +822,20 @@ class WindowsPlatformAdapter(BasePlatformAdapter):
                 message=f"Failed to press key {clean_key}.",
                 error=str(e),
             )
+
+    def unmute_current_process(self) -> None:
+        """Ensure current process audio session in Windows Core Audio is not muted or attenuated."""
+        if AudioUtilities is None:
+            return
+        try:
+            pid = os.getpid()
+            for session in AudioUtilities.GetAllSessions():
+                if session.Process and session.ProcessId == pid:
+                    vol = getattr(session, "SimpleAudioVolume", None)
+                    if vol is not None:
+                        if vol.GetMute():
+                            vol.SetMute(0, None)
+                        if vol.GetMasterVolume() < 0.5:
+                            vol.SetMasterVolume(1.0, None)
+        except Exception:
+            logger.debug("Failed to check or unmute current process volume", exc_info=True)
