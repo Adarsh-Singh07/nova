@@ -24,7 +24,9 @@ def test_windows_volume_operations(
     mock_speakers = MagicMock()
     mock_speakers.EndpointVolume = mock_endpoint
 
-    monkeypatch.setattr("nova.platform.windows.AudioUtilities.GetSpeakers", lambda: mock_speakers)
+    mock_audio_utils = MagicMock()
+    mock_audio_utils.GetSpeakers.return_value = mock_speakers
+    monkeypatch.setattr("nova.platform.windows.AudioUtilities", mock_audio_utils)
 
     # 1. Get Volume
     vol = win_adapter.get_volume()
@@ -47,7 +49,9 @@ def test_windows_volume_endpoint_unavailable(
     win_adapter: WindowsPlatformAdapter, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     # Simulate missing sound card or headless environment
-    monkeypatch.setattr("nova.platform.windows.AudioUtilities.GetSpeakers", lambda: None)
+    mock_audio_utils = MagicMock()
+    mock_audio_utils.GetSpeakers.return_value = None
+    monkeypatch.setattr("nova.platform.windows.AudioUtilities", mock_audio_utils)
 
     # Get volume safe fallback
     assert win_adapter.get_volume() == 50
@@ -74,10 +78,9 @@ def test_windows_per_app_volume(
     mock_session.Process = mock_proc
     mock_session.SimpleAudioVolume = mock_sav
 
-    monkeypatch.setattr(
-        "nova.platform.windows.AudioUtilities.GetAllSessions",
-        lambda: [mock_session],
-    )
+    mock_audio_utils = MagicMock()
+    mock_audio_utils.GetAllSessions.return_value = [mock_session]
+    monkeypatch.setattr("nova.platform.windows.AudioUtilities", mock_audio_utils)
 
     # Match existing process
     res = win_adapter.set_app_volume("spotify", 45)
