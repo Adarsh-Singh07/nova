@@ -78,11 +78,46 @@ class Input(ctypes.Structure):
 INPUT_KEYBOARD = 1
 KEYEVENTF_EXTENDEDKEY = 0x0001
 KEYEVENTF_KEYUP = 0x0002
+KEYEVENTF_UNICODE = 0x0004
+
+VK_BACK = 0x08
+VK_TAB = 0x09
+VK_RETURN = 0x0D
+VK_ESCAPE = 0x1B
+VK_SPACE = 0x20
+VK_PRIOR = 0x21
+VK_NEXT = 0x22
+VK_END = 0x23
+VK_HOME = 0x24
+VK_LEFT = 0x25
+VK_UP = 0x26
+VK_RIGHT = 0x27
+VK_DOWN = 0x28
+VK_DELETE = 0x2E
 
 VK_MEDIA_NEXT_TRACK = 0xB0
 VK_MEDIA_PREV_TRACK = 0xB1
 VK_MEDIA_STOP = 0xB2
 VK_MEDIA_PLAY_PAUSE = 0xB3
+
+WIN_KEY_MAP: dict[str, int] = {
+    "enter": VK_RETURN,
+    "return": VK_RETURN,
+    "tab": VK_TAB,
+    "space": VK_SPACE,
+    "escape": VK_ESCAPE,
+    "esc": VK_ESCAPE,
+    "backspace": VK_BACK,
+    "delete": VK_DELETE,
+    "up": VK_UP,
+    "down": VK_DOWN,
+    "left": VK_LEFT,
+    "right": VK_RIGHT,
+    "home": VK_HOME,
+    "end": VK_END,
+    "pageup": VK_PRIOR,
+    "pagedown": VK_NEXT,
+}
 
 # Windows Messages
 WM_CLOSE = 0x0010
@@ -646,5 +681,130 @@ class WindowsPlatformAdapter(BasePlatformAdapter):
             return ActionResult(
                 success=False,
                 message="Failed to put system to sleep.",
+                error=str(e),
+            )
+
+    # -------------------------------------------------------------------------
+    # Virtual Keyboard Input Control
+    # -------------------------------------------------------------------------
+
+    def type_text(self, text: str) -> ActionResult:
+        """Type text into currently focused window using Win32 SendInput Unicode events."""
+        if not self._windll or not hasattr(self._windll, "user32"):
+            return ActionResult(
+                success=False,
+                message="SendInput is not available on this platform.",
+                error="Win32 user32 unavailable",
+            )
+
+        try:
+            extra = ctypes.c_ulong(0)
+            p_extra = ctypes.pointer(extra)
+            # Send character by character using KEYEVENTF_UNICODE
+            for ch in text:
+                code = ord(ch)
+                down = Input(
+                    type=INPUT_KEYBOARD,
+                    ii=Input_I(
+                        ki=KeyBdInput(
+                            wVk=0,
+                            wScan=code,
+                            dwFlags=KEYEVENTF_UNICODE,
+                            time=0,
+                            dwExtraInfo=p_extra,
+                        )
+                    ),
+                )
+                up = Input(
+                    type=INPUT_KEYBOARD,
+                    ii=Input_I(
+                        ki=KeyBdInput(
+                            wVk=0,
+                            wScan=code,
+                            dwFlags=KEYEVENTF_UNICODE | KEYEVENTF_KEYUP,
+                            time=0,
+                            dwExtraInfo=p_extra,
+                        )
+                    ),
+                )
+                inputs = (Input * 2)(down, up)
+                self._windll.user32.SendInput(2, inputs, ctypes.sizeof(Input))
+
+            return ActionResult(
+                success=True,
+                message="Typed text into active window.",
+                data={"length": len(text)},
+            )
+        except Exception as e:
+            logger.exception("Failed to type text via SendInput")
+            return ActionResult(
+                success=False,
+                message="Failed to type text.",
+                error=str(e),
+            )
+
+    def press_key(self, key: str) -> ActionResult:
+        """Simulate a single virtual key press in the active window."""
+        clean_key = key.strip().lower()
+        vk = WIN_KEY_MAP.get(clean_key)
+        if vk is None:
+            return ActionResult(
+                success=False,
+                message=f"Unsupported key: '{clean_key}'.",
+                error=f"Unsupported virtual key: {clean_key}",
+            )
+
+        if not self._windll or not hasattr(self._windll, "user32"):
+            return ActionResult(
+                success=False,
+                message="SendInput is not available on this platform.",
+                error="Win32 user32 unavailable",
+            )
+
+        try:
+            extra = ctypes.c_ulong(0)
+            p_extra = ctypes.pointer(extra)
+            down = Input(
+                type=INPUT_KEYBOARD,
+                ii=Input_I(
+                    ki=KeyBdInput(
+                        wVk=vk,
+                        wScan=0,
+                        dwFlags=0,
+                        time=0,
+                        dwExtraInfo=p_extra,
+                    )
+                ),
+            )
+            up = Input(
+                type=INPUT_KEYBOARD,
+                ii=Input_I(
+                    ki=KeyBdInput(
+                        wVk=vk,
+                        wScan=0,
+                        dwFlags=KEYEVENTF_KEYUP,
+                        time=0,
+                        dwExtraInfo=p_extra,
+                    )
+                ),
+            )
+            inputs = (Input * 2)(down, up)
+            sent = self._windll.user32.SendInput(2, inputs, ctypes.sizeof(Input))
+            if sent == 2:
+                return ActionResult(
+                    success=True,
+                    message=f"Pressed {clean_key} key.",
+                    data={"key": clean_key, "vk": vk},
+                )
+            return ActionResult(
+                success=False,
+                message=f"Failed to press key {clean_key}.",
+                error="SendInput returned 0",
+            )
+        except Exception as e:
+            logger.exception("Failed to send key press: %s", clean_key)
+            return ActionResult(
+                success=False,
+                message=f"Failed to press key {clean_key}.",
                 error=str(e),
             )

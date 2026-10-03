@@ -311,6 +311,14 @@ class NovaPipeline:
                 message=str(params.get("reply", request.feedback_phrase)),
             )
 
+        if action_id == ActionID.KEYBOARD_TYPE.value:
+            text_to_type = str(params.get("text", ""))
+            return self.platform.type_text(text_to_type)
+
+        if action_id == ActionID.KEYBOARD_PRESS.value:
+            key_to_press = str(params.get("key", ""))
+            return self.platform.press_key(key_to_press)
+
         return ActionResult(
             success=False,
             message="Unsupported action execution",

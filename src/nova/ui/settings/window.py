@@ -21,6 +21,7 @@ from nova.core.settings import NovaSettings, SettingsManager
 from nova.ui.settings.pages.actions import ActionsPage
 from nova.ui.settings.pages.audio import AudioPage
 from nova.ui.settings.pages.general import GeneralPage
+from nova.ui.settings.pages.llm import LLMPage
 from nova.ui.settings.pages.stt import STTPage
 from nova.ui.settings.pages.tts import TTSPage
 from nova.ui.theme import SETTINGS_STYLESHEET
@@ -33,6 +34,7 @@ _PAGES = [
     ("💬  Speech-to-Text", "stt"),
     ("🔊  Text-to-Speech", "tts"),
     ("⚡  Actions", "actions"),
+    ("🤖  AI / LLM", "llm"),
 ]
 
 
@@ -89,6 +91,7 @@ class SettingsWindow(QDialog):
         self._stt_page = STTPage(self._settings)
         self._tts_page = TTSPage(self._settings)
         self._actions_page = ActionsPage(self._settings)
+        self._llm_page = LLMPage(self._settings, settings_manager=self._mgr)
 
         for page in [
             self._general_page,
@@ -96,6 +99,7 @@ class SettingsWindow(QDialog):
             self._stt_page,
             self._tts_page,
             self._actions_page,
+            self._llm_page,
         ]:
             self._stack.addWidget(page)
 
@@ -135,6 +139,7 @@ class SettingsWindow(QDialog):
         self._stt_page.apply_to(self._settings)
         self._tts_page.apply_to(self._settings)
         self._actions_page.apply_to(self._settings)
+        self._llm_page.apply_to(self._settings)
 
         # Write live settings object back to manager and persist
         self._mgr._settings = self._settings

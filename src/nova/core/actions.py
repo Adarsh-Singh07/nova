@@ -51,8 +51,32 @@ class ActionID(StrEnum):
     NOTE_APPEND = "productivity.note_append"
     WEB_SEARCH = "web.search"
     WEB_OPEN_URL = "web.open_url"
+    KEYBOARD_TYPE = "keyboard.type"
+    KEYBOARD_PRESS = "keyboard.press"
     CONVERSATION_REPLY = "conversation.reply"
 
+
+# Allowed keys for virtual keyboard press
+ALLOWED_KEYBOARD_KEYS: frozenset[str] = frozenset(
+    {
+        "enter",
+        "return",
+        "tab",
+        "space",
+        "escape",
+        "esc",
+        "backspace",
+        "delete",
+        "up",
+        "down",
+        "left",
+        "right",
+        "home",
+        "end",
+        "pageup",
+        "pagedown",
+    }
+)
 
 # Actions classified as destructive/disruptive requiring user confirmation by default
 DESTRUCTIVE_ACTIONS: set[ActionID] = {
@@ -100,12 +124,13 @@ class AllowlistValidator:
         action_enum = ActionID(request.action_id)
         params = request.parameters
 
-        # Check for dangerous shell characters across all string parameters
-        for key, value in params.items():
-            if isinstance(value, str) and DANGEROUS_SHELL_CHARACTERS_REGEX.search(value):
-                raise ActionValidationError(
-                    f"Parameter '{key}' contains illegal shell metacharacters: '{value}'"
-                )
+        # Check for dangerous shell characters across system action string parameters
+        if action_enum not in (ActionID.CONVERSATION_REPLY, ActionID.KEYBOARD_TYPE):
+            for key, value in params.items():
+                if isinstance(value, str) and DANGEROUS_SHELL_CHARACTERS_REGEX.search(value):
+                    raise ActionValidationError(
+                        f"Parameter '{key}' contains illegal shell metacharacters: '{value}'"
+                    )
 
         # Action-specific parameter contract validation
         if action_enum == ActionID.VOLUME_SET:
@@ -124,6 +149,10 @@ class AllowlistValidator:
             cls._validate_search(params)
         elif action_enum == ActionID.WEB_OPEN_URL:
             cls._validate_open_url(params)
+        elif action_enum == ActionID.KEYBOARD_TYPE:
+            cls._validate_keyboard_type(params)
+        elif action_enum == ActionID.KEYBOARD_PRESS:
+            cls._validate_keyboard_press(params)
 
     @staticmethod
     def _validate_volume_set(params: dict[str, Any]) -> None:
@@ -206,3 +235,25 @@ class AllowlistValidator:
         url = params["url"].strip()
         if not url.startswith(("http://", "https://")):
             raise ActionValidationError(f"URL must start with http:// or https://, got: '{url}'")
+
+    @staticmethod
+    def _validate_keyboard_type(params: dict[str, Any]) -> None:
+        if "text" not in params or not isinstance(params["text"], str):
+            raise ActionValidationError("keyboard.type requires a string 'text' parameter.")
+        if not params["text"]:
+            raise ActionValidationError("keyboard.type text cannot be empty.")
+        if len(params["text"]) > 1000:
+            raise ActionValidationError(
+                "keyboard.type text exceeds maximum length of 1000 characters."
+            )
+
+    @staticmethod
+    def _validate_keyboard_press(params: dict[str, Any]) -> None:
+        if "key" not in params or not isinstance(params["key"], str):
+            raise ActionValidationError("keyboard.press requires a string 'key' parameter.")
+        key = params["key"].strip().lower()
+        if key not in ALLOWED_KEYBOARD_KEYS:
+            raise ActionValidationError(
+                f"Invalid or disallowed keyboard key: '{key}'. "
+                f"Allowed keys: {', '.join(sorted(ALLOWED_KEYBOARD_KEYS))}"
+            )

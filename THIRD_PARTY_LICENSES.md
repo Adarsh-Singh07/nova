@@ -26,6 +26,8 @@ Every dependency, library, and neural model utilized is cataloged below with its
 | **psutil** | `5.9.0+` | BSD-3-Clause | https://github.com/giampaolo/psutil |
 | **pycaw** | `20260927` | MIT | https://github.com/AndreMiras/pycaw |
 | **comtypes** | `1.4.17` | MIT | https://github.com/enthought/comtypes |
+| **google-genai** | `2.28.0` | Apache-2.0 | https://github.com/googleapis/python-genai |
+| **python-dotenv** | `1.2.4` | BSD-3-Clause | https://github.com/theskumar/python-dotenv |
 
 ## Neural Models & Checkpoints
 
