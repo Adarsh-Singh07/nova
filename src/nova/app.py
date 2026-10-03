@@ -46,6 +46,12 @@ from nova.core import (
     default=False,
     help="Execute real platform OS actions instead of using safe test doubles.",
 )
+@click.option(
+    "--reset-onboarding",
+    is_flag=True,
+    default=False,
+    help="Reset onboarding status and display the setup wizard on launch.",
+)
 @click.pass_context
 def main(
     ctx: click.Context,
@@ -53,6 +59,7 @@ def main(
     text: str | None,
     fast_mode: bool,
     live: bool,
+    reset_onboarding: bool,
 ) -> None:
     """NOVA: The private, offline-first voice assistant for your desktop."""
     if version:
@@ -100,8 +107,21 @@ def main(
             sys.exit(1)
 
     if ctx.invoked_subcommand is None:
-        click.echo("Starting NOVA desktop assistant...")
         import os
+
+        settings_mgr = SettingsManager()
+        if reset_onboarding:
+            settings_mgr.settings.general.onboarding_complete = False
+            settings_mgr.save(settings_mgr.settings)
+            click.echo("[NOVA] Onboarding reset. Setup wizard will appear on startup.")
+
+        click.echo("Starting NOVA desktop assistant...")
+        click.echo("[NOVA] Desktop assistant is active in your system tray.")
+        click.echo("[NOVA] Hold Right Ctrl (ctrl_r) to speak, or use the bottom-left bubble.")
+        click.echo(
+            "[NOVA] Type commands in the bubble text box or right-click the tray icon for Settings."
+        )
+        click.echo("[NOVA] Press Ctrl+C in this terminal to exit.")
 
         if os.environ.get("NOVA_HEADLESS") != "1":
             from nova.ui import run_ui

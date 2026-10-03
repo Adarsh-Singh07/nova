@@ -24,8 +24,26 @@ from PySide6.QtWidgets import (
 )
 
 from nova.core.settings import SettingsManager
+from nova.ui.theme import WIZARD_STYLESHEET
 
 logger = logging.getLogger(__name__)
+
+
+def _make_page_header(title: str, subtitle: str) -> QVBoxLayout:
+    """Create a high-contrast styled header for a wizard page."""
+    header_layout = QVBoxLayout()
+    header_layout.setSpacing(4)
+
+    title_label = QLabel(title)
+    title_label.setStyleSheet("font-size: 18px; font-weight: bold; color: #CBA6F7;")
+
+    subtitle_label = QLabel(subtitle)
+    subtitle_label.setStyleSheet("font-size: 13px; color: #A6ADC8; margin-bottom: 8px;")
+    subtitle_label.setWordWrap(True)
+
+    header_layout.addWidget(title_label)
+    header_layout.addWidget(subtitle_label)
+    return header_layout
 
 
 class _ModelDownloadThread(QThread):
@@ -61,10 +79,14 @@ class WelcomePage(QWizardPage):
 
     def __init__(self) -> None:
         super().__init__()
-        self.setTitle("Welcome to NOVA")
-        self.setSubTitle("The private, offline-first voice assistant for your desktop.")
-
         layout = QVBoxLayout(self)
+        layout.addLayout(
+            _make_page_header(
+                "Welcome to NOVA",
+                "The private, offline-first voice assistant for your desktop.",
+            )
+        )
+
         intro = QLabel(
             "NOVA gives you voice control over your desktop without compromising your privacy.\n\n"
             "• 100% Offline: Voice recognition and speech synthesis run locally on your CPU.\n"
@@ -72,8 +94,10 @@ class WelcomePage(QWizardPage):
             "• Safe Control: Strictly allowlisted actions with confirmation prompts for safety.\n\n"
             "This setup wizard will help you configure your audio and initial preferences."
         )
+        intro.setStyleSheet("font-size: 13px; color: #CDD6F4; line-height: 1.5;")
         intro.setWordWrap(True)
         layout.addWidget(intro)
+        layout.addStretch()
 
 
 class MicTestPage(QWizardPage):
@@ -82,10 +106,15 @@ class MicTestPage(QWizardPage):
     def __init__(self, settings_mgr: SettingsManager) -> None:
         super().__init__()
         self._settings_mgr = settings_mgr
-        self.setTitle("Microphone Setup")
-        self.setSubTitle("Choose which microphone NOVA will use to listen for voice commands.")
 
         layout = QVBoxLayout(self)
+        layout.addLayout(
+            _make_page_header(
+                "Microphone Setup",
+                "Choose which microphone NOVA will use to listen for voice commands.",
+            )
+        )
+
         form = QFormLayout()
 
         self._mic_combo = QComboBox()
@@ -107,8 +136,9 @@ class MicTestPage(QWizardPage):
         layout.addLayout(form)
 
         info = QLabel("You can always change your audio input device later in Settings.")
-        info.setStyleSheet("color: gray; font-size: 11px;")
+        info.setStyleSheet("color: #A6ADC8; font-size: 12px; margin-top: 12px;")
         layout.addWidget(info)
+        layout.addStretch()
 
     def validatePage(self) -> bool:
         selected = self._mic_combo.currentText()
@@ -127,11 +157,16 @@ class ModelDownloadPage(QWizardPage):
         self._download_thread: _ModelDownloadThread | None = None
         self._is_ready = False
 
-        self.setTitle("Speech Recognition Model")
-        self.setSubTitle("NOVA uses local Whisper AI models running directly on your CPU.")
-
         layout = QVBoxLayout(self)
+        layout.addLayout(
+            _make_page_header(
+                "Speech Recognition Model",
+                "NOVA uses local Whisper AI models running directly on your CPU.",
+            )
+        )
+
         self._status_label = QLabel("Checking model cache...")
+        self._status_label.setStyleSheet("font-size: 13px; color: #CDD6F4;")
         layout.addWidget(self._status_label)
 
         self._progress = QProgressBar()
@@ -143,6 +178,7 @@ class ModelDownloadPage(QWizardPage):
         self._download_btn = QPushButton("Download Base Model (~145 MB)")
         self._download_btn.clicked.connect(self._start_download)
         layout.addWidget(self._download_btn)
+        layout.addStretch()
 
     def initializePage(self) -> None:
         try:
@@ -153,6 +189,7 @@ class ModelDownloadPage(QWizardPage):
                 self._status_label.setText(
                     "✅ Speech model is already downloaded and ready to use."
                 )
+                self._status_label.setStyleSheet("color: #10B981; font-weight: bold;")
                 self._download_btn.setEnabled(False)
                 self._is_ready = True
                 self.completeChanged.emit()
@@ -182,13 +219,14 @@ class ModelDownloadPage(QWizardPage):
 
     def _on_finished(self) -> None:
         self._status_label.setText("✅ Model downloaded successfully!")
+        self._status_label.setStyleSheet("color: #10B981; font-weight: bold;")
         self._is_ready = True
         self.completeChanged.emit()
 
     def _on_failed(self, err: str) -> None:
         self._status_label.setText(f"❌ Download failed: {err}. You can retry or continue.")
+        self._status_label.setStyleSheet("color: #EF4444;")
         self._download_btn.setEnabled(True)
-        # Allow user to continue anyway; they can download later in Settings
         self._is_ready = True
         self.completeChanged.emit()
 
@@ -202,10 +240,15 @@ class HotkeySetupPage(QWizardPage):
     def __init__(self, settings_mgr: SettingsManager) -> None:
         super().__init__()
         self._settings_mgr = settings_mgr
-        self.setTitle("Push-to-Talk Hotkey")
-        self.setSubTitle("Choose the key you will hold down while speaking voice commands.")
 
         layout = QVBoxLayout(self)
+        layout.addLayout(
+            _make_page_header(
+                "Push-to-Talk Hotkey",
+                "Choose the key you will hold down while speaking voice commands.",
+            )
+        )
+
         form = QFormLayout()
 
         self._hotkey_input = QLineEdit(self._settings_mgr.settings.audio.push_to_talk_key)
@@ -217,8 +260,9 @@ class HotkeySetupPage(QWizardPage):
             "Default is 'ctrl_r' (Right Control). While held, NOVA records your speech.\n"
             "When released, NOVA immediately executes your command."
         )
-        hint.setStyleSheet("color: gray; font-size: 11px;")
+        hint.setStyleSheet("color: #A6ADC8; font-size: 12px; margin-top: 10px;")
         layout.addWidget(hint)
+        layout.addStretch()
 
     def validatePage(self) -> bool:
         key = self._hotkey_input.text().strip() or "ctrl_r"
@@ -232,10 +276,14 @@ class PermissionsPage(QWizardPage):
     def __init__(self, settings_mgr: SettingsManager) -> None:
         super().__init__()
         self._settings_mgr = settings_mgr
-        self.setTitle("Safety & Confirmations")
-        self.setSubTitle("Protect your system from accidental destructive voice commands.")
 
         layout = QVBoxLayout(self)
+        layout.addLayout(
+            _make_page_header(
+                "Safety & Confirmations",
+                "Protect your system from accidental destructive voice commands.",
+            )
+        )
 
         self._confirm_lock = QCheckBox("Require confirmation before locking computer")
         self._confirm_lock.setChecked(self._settings_mgr.settings.security.confirm_lock)
@@ -253,8 +301,9 @@ class PermissionsPage(QWizardPage):
             "\nBy default, destructive actions ask for a spoken or on-screen confirmation.\n"
             "Critical system processes (explorer, csrss, etc.) are always protected."
         )
-        desc.setStyleSheet("color: #10B981; font-size: 11px;")
+        desc.setStyleSheet("color: #10B981; font-size: 12px; margin-top: 8px;")
         layout.addWidget(desc)
+        layout.addStretch()
 
     def validatePage(self) -> bool:
         sec = self._settings_mgr.settings.security
@@ -271,7 +320,9 @@ class OnboardingWizard(QWizard):
         super().__init__(parent)
         self._settings_mgr = settings_mgr
         self.setWindowTitle("NOVA Setup Wizard")
-        self.setMinimumSize(540, 400)
+        self.setMinimumSize(560, 420)
+        self.setWizardStyle(QWizard.WizardStyle.ClassicStyle)
+        self.setStyleSheet(WIZARD_STYLESHEET)
 
         self.addPage(WelcomePage())
         self.addPage(MicTestPage(self._settings_mgr))
