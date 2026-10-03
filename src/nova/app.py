@@ -90,19 +90,64 @@ def main(ctx: click.Context, version: bool, text: str | None, fast_mode: bool) -
 def doctor() -> None:
     """Diagnose hardware, models, platform adapters, and configuration."""
     click.echo(f"=== NOVA Doctor Diagnostic (v{__version__}) ===")
-    click.echo(f"Python Platform: {sys.platform} ({sys.version.split()[0]})")
+    click.echo(f"OS Platform: {sys.platform} (Python {sys.version.split()[0]})")
 
+    # 1. Configuration & Logs
     settings_mgr = SettingsManager()
+    click.echo("\n[Configuration]")
     click.echo(
         f"Config File: {settings_mgr.config_path} (exists: {settings_mgr.config_path.exists()})"
     )
 
     log_path = setup_logging(enable_console=False)
     click.echo(f"Log File: {log_path} (writable: {log_path.parent.exists()})")
-
     click.echo(f"Security fast_mode: {settings_mgr.settings.security.fast_mode}")
     click.echo(f"Wake word enabled: {settings_mgr.settings.audio.wake_word_enabled}")
-    click.echo("Diagnosis complete: System operational.")
+
+    # 2. Audio Hardware
+    from nova.audio import (
+        get_default_input_device,
+        get_default_output_device,
+        list_input_devices,
+        list_output_devices,
+    )
+
+    click.echo("\n[Audio Hardware]")
+    try:
+        inputs = list_input_devices()
+        outputs = list_output_devices()
+        def_in = get_default_input_device()
+        def_out = get_default_output_device()
+
+        click.echo(f"Input Devices Found: {len(inputs)}")
+        click.echo(f"Default Microphone: '{def_in.name if def_in else 'None'}'")
+        click.echo(f"Output Devices Found: {len(outputs)}")
+        click.echo(f"Default Speaker: '{def_out.name if def_out else 'None'}'")
+    except Exception as e:
+        click.echo(f"Audio query error: {e}")
+
+    # 3. Speech-to-Text Model Status
+    from nova.stt import ModelManager
+
+    click.echo("\n[Speech-to-Text]")
+    stt_mgr = ModelManager()
+    stt_model = settings_mgr.settings.stt.model_size
+    click.echo(f"Configured STT Model: '{stt_model}'")
+    click.echo(f"Model Cached on Disk: {stt_mgr.is_model_cached(stt_model)}")
+    click.echo(f"Model Cache Directory: {stt_mgr.cache_dir}")
+
+    # 4. Text-to-Speech Engine Status
+    from nova.tts import PiperVoiceManager, TTSDiskCache
+
+    click.echo("\n[Text-to-Speech]")
+    tts_mgr = PiperVoiceManager()
+    tts_cache = TTSDiskCache()
+    voice = settings_mgr.settings.tts.voice
+    click.echo(f"Configured Voice: '{voice}'")
+    click.echo(f"Voice Model Cached: {tts_mgr.is_voice_cached(voice)}")
+    click.echo(f"TTS Disk Cache Directory: {tts_cache.cache_dir}")
+
+    click.echo("\nDiagnosis complete: System operational.")
 
 
 if __name__ == "__main__":
