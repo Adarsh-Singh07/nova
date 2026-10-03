@@ -87,6 +87,10 @@ class AudioPlayer:
             )
             if blocking:
                 _finished_callback()
+        except sd.PortAudioError as e:
+            with self._lock:
+                self._is_playing = False
+            logger.warning("Audio playback device unavailable: %s", e)
         except Exception as e:
             with self._lock:
                 self._is_playing = False

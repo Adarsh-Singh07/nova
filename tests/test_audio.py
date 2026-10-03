@@ -9,6 +9,7 @@ import pytest
 
 from nova.audio.capture import (
     AudioCapture,
+    AudioDeviceInfo,
     AudioDeviceUnavailableError,
     NoMicrophoneError,
     get_default_input_device,
@@ -53,10 +54,19 @@ def test_audio_capture_initialization() -> None:
     assert capture.current_device is None
 
 
-def test_audio_capture_device_resolution() -> None:
+def test_audio_capture_device_resolution(monkeypatch: pytest.MonkeyPatch) -> None:
     inputs = list_input_devices()
     if not inputs:
-        pytest.skip("No hardware microphones available.")
+        mock_dev = AudioDeviceInfo(
+            index=0,
+            name="Mock Microphone",
+            max_input_channels=2,
+            max_output_channels=0,
+            default_sample_rate=16000.0,
+            host_api=0,
+        )
+        monkeypatch.setattr("nova.audio.capture.list_input_devices", lambda: [mock_dev])
+        inputs = [mock_dev]
 
     # 1. Resolve by explicit valid index
     capture = AudioCapture(device_name_or_index=inputs[0].index)
@@ -79,7 +89,18 @@ def test_audio_capture_no_microphone_error() -> None:
 def test_audio_callback_accumulation() -> None:
     capture = AudioCapture()
     capture._is_recording = True
-    capture._device_info = list_input_devices()[0] if list_input_devices() else None
+    capture._device_info = (
+        list_input_devices()[0]
+        if list_input_devices()
+        else AudioDeviceInfo(
+            index=0,
+            name="Mock Mic",
+            max_input_channels=1,
+            max_output_channels=0,
+            default_sample_rate=16000.0,
+            host_api=0,
+        )
+    )
 
     # Simulate 1 channel incoming chunk
     chunk = np.ones((480, 1), dtype=np.float32) * 0.1
@@ -91,17 +112,33 @@ def test_audio_callback_accumulation() -> None:
     assert capture.read_chunk() is None
 
 
-def test_audio_capture_start_stop() -> None:
-    inputs = list_input_devices()
-    if not inputs:
-        pytest.skip("No audio capture hardware.")
+def test_audio_capture_start_stop(monkeypatch: pytest.MonkeyPatch) -> None:
+    mock_stream = MagicMock()
+    monkeypatch.setattr("sounddevice.InputStream", MagicMock(return_value=mock_stream))
 
-    capture = AudioCapture(device_name_or_index=inputs[0].index)
+    mock_dev = AudioDeviceInfo(
+        index=0,
+        name="Mock Mic",
+        max_input_channels=1,
+        max_output_channels=0,
+        default_sample_rate=16000.0,
+        host_api=0,
+    )
+    monkeypatch.setattr("nova.audio.capture.list_input_devices", lambda: [mock_dev])
+    monkeypatch.setattr("nova.audio.capture.get_default_input_device", lambda: mock_dev)
+
+    capture = AudioCapture(device_name_or_index=0)
     try:
         capture.start()
         assert capture.is_recording is True
         assert capture.current_device is not None
+        mock_stream.start.assert_called_once()
+        # Feed sample data via callback
+        capture._audio_callback(np.zeros((480, 1), dtype=np.float32), 480, None, MagicMock())
     finally:
         audio = capture.stop()
         assert capture.is_recording is False
+        mock_stream.stop.assert_called_once()
+        mock_stream.close.assert_called_once()
         assert isinstance(audio, np.ndarray)
+        assert len(audio) == 480
