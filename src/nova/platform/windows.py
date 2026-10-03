@@ -468,7 +468,15 @@ class WindowsPlatformAdapter(BasePlatformAdapter):
 
         try:
             # os.startfile opens applications via Windows Shell without invoking cmd or powershell
-            os.startfile(target)
+            startfile = getattr(os, "startfile", None)
+            if startfile is not None:
+                startfile(target)
+            else:
+                return ActionResult(
+                    success=False,
+                    message="os.startfile is only available on Windows.",
+                    error="Not supported on non-Windows platforms",
+                )
             return ActionResult(
                 success=True,
                 message=f"Launched {app_name_or_target}.",
@@ -502,7 +510,8 @@ class WindowsPlatformAdapter(BasePlatformAdapter):
             return True
 
         try:
-            WNDENUMPROC = ctypes.WINFUNCTYPE(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
+            winfunctype = getattr(ctypes, "WINFUNCTYPE", ctypes.CFUNCTYPE)
+            WNDENUMPROC = winfunctype(wintypes.BOOL, wintypes.HWND, wintypes.LPARAM)
             cb = WNDENUMPROC(enum_windows_callback)
             self._windll.user32.EnumWindows(cb, 0)
             return len(found_windows) > 0
