@@ -17,8 +17,8 @@ def test_settings_window_load_and_save(tmp_path: Path, qtbot: Any) -> None:
     win = SettingsWindow(settings_manager=mgr)
     qtbot.addWidget(win)
 
-    # Check page count
-    assert win._stack.count() == 5
+    # Check page count (General, Audio, STT, TTS, Actions, LLM)
+    assert win._stack.count() == 6
 
     # Switch pages
     win._switch_page(0)  # General
@@ -27,10 +27,15 @@ def test_settings_window_load_and_save(tmp_path: Path, qtbot: Any) -> None:
     win._switch_page(4)  # Actions
     assert win._stack.currentIndex() == 4
 
-    # Mutate field in General page
+    win._switch_page(5)  # LLM
+    assert win._stack.currentIndex() == 5
+
+    # Mutate field in General page and LLM page
     win._general_page._fast_mode.setChecked(True)
+    win._llm_page._provider_combo.setCurrentIndex(win._llm_page._provider_combo.findData("agnes"))
     win._save()
 
     # Verify settings persisted
     reloaded_mgr = SettingsManager(config_path=config_file)
     assert reloaded_mgr.settings.security.fast_mode is True
+    assert reloaded_mgr.settings.llm.provider == "agnes"

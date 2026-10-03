@@ -14,7 +14,7 @@ This document outlines the phased engineering milestones from initial repository
 | **Phase 3** | **Intent Engine (Tier 1)** | ✅ Completed | Deterministic pattern parser, compound commands, numbers, RapidFuzz app matching, 300+ phrase tests. |
 | **Phase 4** | **Platform Adapters** | ✅ Completed | Windows 10/11 & Linux contract implementations (volume, media keys, sleep, lock, theme, apps). |
 | **Phase 5** | **UI (PySide6)** | ✅ Completed | System tray icon with state colors, floating transcript bubble, settings window, onboarding wizard. |
-| **Phase 6** | **Optional Tier 2 LLM Tier** | ⏳ Queued | Ollama, Gemini, OpenRouter, Anthropic, OpenAI adapters with strict JSON schema and injection defense. |
+| **Phase 6** | **Tier 2 LLM Integration & Automation** | ✅ Completed | Cascade routing: Gemini 3.8 Live, Agnes 3.0 Flash, Gemini 2.0 Flash, Ollama; secure keychain; keyboard typing & key press automation. |
 | **Phase 7** | **Skills System** | ⏳ Queued | Sandboxed plugin API, permission declarations, install flow, and 3 example skills. |
 | **Phase 8** | **Packaging & Release** | ⏳ Queued | Windows Inno Setup installer & portable zip; Linux AppImage & `.deb`; automated release workflow. |
 | **Phase 9** | **Docs, Website & Launch Kit** | ⏳ Queued | Comprehensive documentation site, landing page, Show HN, Reddit, and Product Hunt assets. |

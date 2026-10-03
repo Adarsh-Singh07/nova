@@ -160,3 +160,13 @@ class BasePlatformAdapter(abc.ABC, PlatformAdapterProtocol):
     def toggle_dark_mode(self) -> ActionResult:
         """Toggle system dark/light theme."""
         raise NotImplementedError
+
+    @abc.abstractmethod
+    def type_text(self, text: str) -> ActionResult:
+        """Type text into the currently active window."""
+        raise NotImplementedError
+
+    @abc.abstractmethod
+    def press_key(self, key: str) -> ActionResult:
+        """Simulate a single virtual key press in the active window."""
+        raise NotImplementedError

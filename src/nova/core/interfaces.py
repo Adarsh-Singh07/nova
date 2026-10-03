@@ -144,6 +144,14 @@ class PlatformAdapterProtocol(Protocol):
         """Open a validated URL in the user's default web browser."""
         ...
 
+    def type_text(self, text: str) -> ActionResult:
+        """Type text into the currently active window or input field."""
+        ...
+
+    def press_key(self, key: str) -> ActionResult:
+        """Simulate a single virtual key press in the active window."""
+        ...
+
 
 @runtime_checkable
 class ConfirmationHandlerProtocol(Protocol):

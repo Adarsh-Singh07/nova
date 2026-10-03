@@ -233,6 +233,8 @@ class FakePlatformAdapter(PlatformAdapterProtocol):
         self.launched_apps: list[str] = []
         self.closed_apps: list[str] = []
         self.opened_urls: list[str] = []
+        self.typed_texts: list[str] = []
+        self.pressed_keys: list[str] = []
 
     def set_volume(self, percent: int) -> ActionResult:
         self.volume = max(0, min(100, percent))
@@ -316,6 +318,17 @@ class FakePlatformAdapter(PlatformAdapterProtocol):
             )
         self.opened_urls.append(clean)
         return ActionResult(success=True, message=f"Opened {clean}")
+
+    def type_text(self, text: str) -> ActionResult:
+        self.typed_texts.append(text)
+        return ActionResult(success=True, message=f"Typed text: {text}", data={"text": text})
+
+    def press_key(self, key: str) -> ActionResult:
+        clean_key = key.strip().lower()
+        self.pressed_keys.append(clean_key)
+        return ActionResult(
+            success=True, message=f"Pressed {clean_key} key", data={"key": clean_key}
+        )
 
 
 class FakeConfirmationHandler(ConfirmationHandlerProtocol):

@@ -85,7 +85,14 @@ class PipelineWorker(QThread):
         self._tts = PiperEngine(default_voice=self._settings_mgr.settings.tts.voice)
         self._player = AudioPlayer()
         platform = get_platform_adapter()
-        intent = Tier1IntentEngine(settings=self._settings_mgr.settings)
+
+        from nova.llm import CascadeIntentEngine
+
+        tier1 = Tier1IntentEngine(settings=self._settings_mgr.settings)
+        intent = CascadeIntentEngine(
+            settings=self._settings_mgr.settings.llm,
+            tier1_engine=tier1,
+        )
 
         self._pipeline = NovaPipeline(
             state_machine=state_machine,

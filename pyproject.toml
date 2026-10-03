@@ -43,6 +43,8 @@ dependencies = [
     "psutil>=5.9.0",
     "pycaw>=20260927; sys_platform == 'win32'",
     "comtypes>=1.4.17; sys_platform == 'win32'",
+    "google-genai>=2.3.0",
+    "python-dotenv>=1.0.0",
 ]
 
 [project.optional-dependencies]
@@ -127,6 +129,9 @@ module = [
     "scipy.*",
     "pycaw.*",
     "comtypes.*",
+    "google.*",
+    "google.genai.*",
+    "dotenv.*",
 ]
 ignore_missing_imports = true
 
@@ -135,6 +140,9 @@ minversion = "8.0"
 addopts = "-ra -q --strict-markers"
 testpaths = ["tests"]
 pythonpath = ["src"]
+markers = [
+    "asyncio",
+]
 filterwarnings = [
     "ignore::DeprecationWarning",
 ]

@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from nova.core.settings import NovaSettings, SettingsManager
 
 
@@ -54,3 +56,24 @@ def test_settings_update(tmp_path: Path) -> None:
     updated = manager.update(general={"locale": "es"})
     assert updated.general.locale == "es"
     assert manager.settings.general.locale == "es"
+
+
+def test_llm_settings_and_credentials(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    config_file = tmp_path / "llm_config.toml"
+    manager = SettingsManager(config_path=config_file)
+
+    assert manager.settings.llm.enabled is True
+    assert manager.settings.llm.provider == "cascade"
+    assert manager.settings.llm.cascade_fallback is True
+    assert manager.settings.llm.live_model == "gemini-3.8-live"
+    assert manager.settings.llm.agnes_model == "agnes-3.0-flash"
+
+    # Test key setting and retrieval
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    monkeypatch.delenv("AGNES_API_KEY", raising=False)
+
+    manager.set_gemini_api_key("test-gemini-key-12345")
+    assert manager.get_gemini_api_key() == "test-gemini-key-12345"
+
+    manager.set_agnes_api_key("test-agnes-key-67890")
+    assert manager.get_agnes_api_key() == "test-agnes-key-67890"

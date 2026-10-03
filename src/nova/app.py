@@ -72,11 +72,13 @@ def main(
         if fast_mode:
             settings_mgr.settings.security.fast_mode = True
 
-        from nova.intent import Tier1IntentEngine
+        from nova.llm import CascadeIntentEngine
         from nova.platform import get_platform_adapter
 
         platform_inst = get_platform_adapter() if live else FakePlatformAdapter()
-        intent_inst = Tier1IntentEngine() if live else FakeIntentEngine()
+        intent_inst = (
+            CascadeIntentEngine(settings=settings_mgr.settings.llm) if live else FakeIntentEngine()
+        )
 
         pipeline = NovaPipeline(
             state_machine=PipelineStateMachine(),

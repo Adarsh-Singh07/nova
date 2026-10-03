@@ -637,3 +637,115 @@ class LinuxPlatformAdapter(BasePlatformAdapter):
             message="No system suspend utility (systemctl or loginctl) found.",
             error="Suspend utility unavailable",
         )
+
+    # -------------------------------------------------------------------------
+    # Virtual Keyboard Input Control
+    # -------------------------------------------------------------------------
+
+    def type_text(self, text: str) -> ActionResult:
+        """Type text into active window via xdotool or ydotool."""
+        xdotool = shutil.which("xdotool")
+        ydotool = shutil.which("ydotool")
+
+        if xdotool:
+            try:
+                subprocess.run(
+                    [xdotool, "type", "--", text],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                )
+                return ActionResult(
+                    success=True,
+                    message="Typed text into active window.",
+                    data={"length": len(text)},
+                )
+            except Exception as e:
+                logger.warning("xdotool type failed: %s", e)
+                return ActionResult(
+                    success=False,
+                    message="Failed to type text via xdotool.",
+                    error=str(e),
+                )
+
+        if ydotool:
+            try:
+                subprocess.run(
+                    [ydotool, "type", "--", text],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                )
+                return ActionResult(
+                    success=True,
+                    message="Typed text into active window.",
+                    data={"length": len(text)},
+                )
+            except Exception as e:
+                logger.warning("ydotool type failed: %s", e)
+                return ActionResult(
+                    success=False,
+                    message="Failed to type text via ydotool.",
+                    error=str(e),
+                )
+
+        return ActionResult(
+            success=False,
+            message="No typing utility (xdotool or ydotool) found.",
+            error="xdotool/ydotool unavailable",
+        )
+
+    def press_key(self, key: str) -> ActionResult:
+        """Press a virtual key in active window via xdotool or ydotool."""
+        clean_key = key.strip().lower()
+        key_name = "Return" if clean_key in ("enter", "return") else clean_key.capitalize()
+        xdotool = shutil.which("xdotool")
+        ydotool = shutil.which("ydotool")
+
+        if xdotool:
+            try:
+                subprocess.run(
+                    [xdotool, "key", key_name],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                )
+                return ActionResult(
+                    success=True,
+                    message=f"Pressed {clean_key} key.",
+                    data={"key": clean_key},
+                )
+            except Exception as e:
+                logger.warning("xdotool key failed: %s", e)
+                return ActionResult(
+                    success=False,
+                    message=f"Failed to press key {clean_key}.",
+                    error=str(e),
+                )
+
+        if ydotool:
+            try:
+                subprocess.run(
+                    [ydotool, "key", clean_key],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                )
+                return ActionResult(
+                    success=True,
+                    message=f"Pressed {clean_key} key.",
+                    data={"key": clean_key},
+                )
+            except Exception as e:
+                logger.warning("ydotool key failed: %s", e)
+                return ActionResult(
+                    success=False,
+                    message=f"Failed to press key {clean_key}.",
+                    error=str(e),
+                )
+
+        return ActionResult(
+            success=False,
+            message="No keypress utility (xdotool or ydotool) found.",
+            error="xdotool/ydotool unavailable",
+        )

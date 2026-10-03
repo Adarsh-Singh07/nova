@@ -6,14 +6,22 @@ and Rule R5 (secure defaults, confirmations enabled by default).
 
 from __future__ import annotations
 
+import contextlib
 import logging
+import os
 import tomllib
 from pathlib import Path
 from typing import Any
 
+import dotenv
 import platformdirs
 import tomli_w
 from pydantic import BaseModel, Field
+
+try:
+    import keyring
+except ImportError:
+    keyring = None  # type: ignore[assignment]
 
 logger = logging.getLogger(__name__)
 
@@ -85,16 +93,49 @@ class SecuritySettings(BaseModel):
 
 
 class LLMSettings(BaseModel):
-    """Optional Tier 2 Cloud / Local LLM provider settings (Opt-in)."""
+    """Tier 2 Cloud / Local LLM provider and cascade settings."""
 
-    provider: str = Field(
-        default="offline",
-        description="Active LLM provider: offline, gemini, ollama, openrouter, openai, anthropic.",
+    enabled: bool = Field(
+        default=True,
+        description="Whether Tier 2 LLM processing is enabled when Tier 1 regex doesn't match.",
     )
-    gemini_model: str = Field(default="gemini-2.0-flash", description="Gemini model identifier.")
-    ollama_model: str = Field(default="llama3:8b", description="Local Ollama model name.")
+    provider: str = Field(
+        default="cascade",
+        description="Active LLM strategy: cascade, gemini_live, agnes, gemini_turn, ollama, offline.",
+    )
+    cascade_fallback: bool = Field(
+        default=True,
+        description="If True, cascades through Gemini Live -> Agnes -> Gemini Turn -> Ollama.",
+    )
+    live_model: str = Field(
+        default="gemini-3.8-live",
+        description="Gemini Live bidirectional streaming model.",
+    )
+    gemini_model: str = Field(
+        default="gemini-2.0-flash",
+        description="Gemini turn-based model identifier.",
+    )
+    agnes_base_url: str = Field(
+        default="https://apihub.agnes-ai.com/v1",
+        description="Agnes AI OpenAI-compatible base URL.",
+    )
+    agnes_model: str = Field(
+        default="agnes-3.0-flash",
+        description="Agnes model identifier (unlimited tokens).",
+    )
+    ollama_base_url: str = Field(
+        default="http://localhost:11434",
+        description="Local Ollama server base URL.",
+    )
+    ollama_model: str = Field(
+        default="llama3:8b",
+        description="Local Ollama model name.",
+    )
     timeout_seconds: float = Field(
-        default=10.0, ge=1.0, le=60.0, description="Provider network timeout."
+        default=10.0,
+        ge=1.0,
+        le=60.0,
+        description="Provider network timeout.",
     )
 
 
@@ -148,6 +189,9 @@ class SettingsManager:
     """Manages loading, saving, and persisting settings to OS-correct config directory."""
 
     def __init__(self, config_path: Path | None = None) -> None:
+        with contextlib.suppress(Exception):
+            dotenv.load_dotenv()
+
         if config_path is None:
             config_dir = Path(platformdirs.user_config_dir(APP_NAME, APP_AUTHOR))
             self._config_path = config_dir / "config.toml"
@@ -155,6 +199,54 @@ class SettingsManager:
             self._config_path = config_path
 
         self._settings = self.load()
+
+    def get_gemini_api_key(self) -> str | None:
+        """Retrieve Gemini API key from environment variable or OS keyring."""
+        key = os.environ.get("GEMINI_API_KEY")
+        if key and key.strip():
+            return key.strip()
+        if keyring is not None:
+            try:
+                stored = keyring.get_password("nova", "gemini_api_key")
+                if stored and stored.strip():
+                    return stored.strip()
+            except Exception:
+                logger.debug("Keyring access error for gemini_api_key", exc_info=True)
+        return None
+
+    def set_gemini_api_key(self, key: str) -> None:
+        """Store Gemini API key in OS keyring and active process environment."""
+        clean = key.strip()
+        os.environ["GEMINI_API_KEY"] = clean
+        if keyring is not None:
+            try:
+                keyring.set_password("nova", "gemini_api_key", clean)
+            except Exception:
+                logger.warning("Could not persist gemini_api_key to OS keyring.")
+
+    def get_agnes_api_key(self) -> str | None:
+        """Retrieve Agnes API key from environment variable or OS keyring."""
+        key = os.environ.get("AGNES_API_KEY")
+        if key and key.strip():
+            return key.strip()
+        if keyring is not None:
+            try:
+                stored = keyring.get_password("nova", "agnes_api_key")
+                if stored and stored.strip():
+                    return stored.strip()
+            except Exception:
+                logger.debug("Keyring access error for agnes_api_key", exc_info=True)
+        return None
+
+    def set_agnes_api_key(self, key: str) -> None:
+        """Store Agnes API key in OS keyring and active process environment."""
+        clean = key.strip()
+        os.environ["AGNES_API_KEY"] = clean
+        if keyring is not None:
+            try:
+                keyring.set_password("nova", "agnes_api_key", clean)
+            except Exception:
+                logger.warning("Could not persist agnes_api_key to OS keyring.")
 
     @property
     def config_path(self) -> Path:
