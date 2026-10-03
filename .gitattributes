@@ -1,0 +1,8 @@
+# Enforce LF line endings across all platforms to satisfy Ruff formatting rules
+* text=auto eol=lf
+*.py text eol=lf
+*.toml text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.json text eol=lf
