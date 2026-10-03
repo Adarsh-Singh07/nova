@@ -40,8 +40,20 @@ from nova.core import (
     is_flag=True,
     help="Bypass confirmation prompt for destructive actions.",
 )
+@click.option(
+    "--live",
+    is_flag=True,
+    default=False,
+    help="Execute real platform OS actions instead of using safe test doubles.",
+)
 @click.pass_context
-def main(ctx: click.Context, version: bool, text: str | None, fast_mode: bool) -> None:
+def main(
+    ctx: click.Context,
+    version: bool,
+    text: str | None,
+    fast_mode: bool,
+    live: bool,
+) -> None:
     """NOVA: The private, offline-first voice assistant for your desktop."""
     if version:
         click.echo(f"NOVA version {__version__}")
@@ -53,12 +65,18 @@ def main(ctx: click.Context, version: bool, text: str | None, fast_mode: bool) -
         if fast_mode:
             settings_mgr.settings.security.fast_mode = True
 
+        from nova.intent import Tier1IntentEngine
+        from nova.platform import get_platform_adapter
+
+        platform_inst = get_platform_adapter() if live else FakePlatformAdapter()
+        intent_inst = Tier1IntentEngine() if live else FakeIntentEngine()
+
         pipeline = NovaPipeline(
             state_machine=PipelineStateMachine(),
             stt=FakeSTTEngine(),
-            intent_engine=FakeIntentEngine(),
+            intent_engine=intent_inst,
             tts=FakeTTSEngine(),
-            platform=FakePlatformAdapter(),
+            platform=platform_inst,
             settings=settings_mgr.settings,
             confirmation_handler=FakeConfirmationHandler(auto_confirm=True),
         )
@@ -146,6 +164,15 @@ def doctor() -> None:
     click.echo(f"Configured Voice: '{voice}'")
     click.echo(f"Voice Model Cached: {tts_mgr.is_voice_cached(voice)}")
     click.echo(f"TTS Disk Cache Directory: {tts_cache.cache_dir}")
+
+    # 5. Platform Adapter Status
+    from nova.platform import get_platform_adapter
+
+    click.echo("\n[Platform Adapter]")
+    platform_inst = get_platform_adapter()
+    click.echo(f"Active Adapter: {type(platform_inst).__name__}")
+    vol = platform_inst.get_volume()
+    click.echo(f"Master Volume: {vol}%")
 
     click.echo("\nDiagnosis complete: System operational.")
 

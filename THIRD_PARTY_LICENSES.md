@@ -23,6 +23,9 @@ Every dependency, library, and neural model utilized is cataloged below with its
 | **click** | `8.1.7` | BSD-3-Clause | https://github.com/pallets/click |
 | **httpx** | `0.27.0` | BSD-3-Clause | https://github.com/encode/httpx |
 | **tomli-w** | `1.0.0` | MIT | https://github.com/hukkin/tomli-w |
+| **psutil** | `5.9.0+` | BSD-3-Clause | https://github.com/giampaolo/psutil |
+| **pycaw** | `20260927` | MIT | https://github.com/AndreMiras/pycaw |
+| **comtypes** | `1.4.17` | MIT | https://github.com/enthought/comtypes |
 
 ## Neural Models & Checkpoints
 

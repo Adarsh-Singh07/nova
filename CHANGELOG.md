@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Phase 4: Cross-Platform Adapters for Windows 10/11 and Linux.
+  - Windows platform adapter (`WindowsPlatformAdapter`) implementing master and per-app volume control via `pycaw`, system mute toggling, non-blocking media key events via `SendInput` with fallback to `WM_APPCOMMAND`, system dark/light theme switching with `WM_SETTINGCHANGE` broadcast via `SendMessageTimeoutW`, non-shell application launching via Windows Start Menu `.lnk` parsing and `os.startfile`, workstation locking via `LockWorkStation`, and suspend via `SetSuspendState`.
+  - Linux platform adapter (`LinuxPlatformAdapter`) supporting audio engine runtime detection hierarchy (`wpctl` -> `pactl` -> `amixer`), media playback control via `playerctl` and D-Bus MPRIS2, theme switching across GNOME (`gsettings`) and KDE Plasma (`plasma-apply-lookandfeel`), application launching via XDG Desktop Entry specification (`.desktop`) parsing and non-shell `subprocess.Popen`, screen locking via `loginctl lock-session` with D-Bus Screensaver fallback, and sleep via `systemctl suspend`.
+  - Process deny-list protection (`is_critical_process`) preventing inadvertent or malicious termination of critical system processes (`explorer.exe`, `csrss.exe`, `systemd`, `dbus`, `nova.exe`, etc.), with graceful `WM_CLOSE`/`SIGTERM` followed by fallback force termination.
+  - Universal contract test suite (`tests/test_platform_contract.py`), comprehensive Windows mock tests (`tests/test_platform_windows.py`), Linux mock tests (`tests/test_platform_linux.py`), and empirical Windows 11 hardware verification report (`docs/test_reports/phase4_windows_live_evidence.md`).
+  - Added `MEDIA_STOP` and `VOLUME_APP_SET` to pipeline action execution and `nova doctor` platform diagnostic checks.
 - Phase 3: Tier 1 Deterministic Intent Engine.
   - Zero-latency (<1ms) regex and pattern-based deterministic intent engine (`Tier1IntentEngine`) parsing 23 distinct OS and utility intents with zero cloud dependency.
   - Conversational chatter rejection, negation filtering ("don't lock the PC"), and non-command idiom disambiguation ("volume of a sphere", "play it by ear").

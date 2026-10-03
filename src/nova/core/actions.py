@@ -28,6 +28,7 @@ class ActionID(StrEnum):
     MEDIA_PLAY_PAUSE = "media.play_pause"
     MEDIA_NEXT = "media.next"
     MEDIA_PREVIOUS = "media.previous"
+    MEDIA_STOP = "media.stop"
 
     # System State Controls (Destructive/Disruptive)
     SYSTEM_LOCK = "system.lock"
