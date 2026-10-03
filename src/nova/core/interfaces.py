@@ -152,6 +152,10 @@ class PlatformAdapterProtocol(Protocol):
         """Simulate a single virtual key press in the active window."""
         ...
 
+    def unmute_current_process(self) -> None:
+        """Ensure current process audio session in OS mixer is unmuted and audible."""
+        ...
+
 
 @runtime_checkable
 class ConfirmationHandlerProtocol(Protocol):

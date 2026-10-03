@@ -235,6 +235,7 @@ class FakePlatformAdapter(PlatformAdapterProtocol):
         self.opened_urls: list[str] = []
         self.typed_texts: list[str] = []
         self.pressed_keys: list[str] = []
+        self.process_unmuted = False
 
     def set_volume(self, percent: int) -> ActionResult:
         self.volume = max(0, min(100, percent))
@@ -329,6 +330,9 @@ class FakePlatformAdapter(PlatformAdapterProtocol):
         return ActionResult(
             success=True, message=f"Pressed {clean_key} key", data={"key": clean_key}
         )
+
+    def unmute_current_process(self) -> None:
+        self.process_unmuted = True
 
 
 class FakeConfirmationHandler(ConfirmationHandlerProtocol):

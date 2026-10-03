@@ -21,13 +21,14 @@ from collections.abc import Callable
 
 from PySide6.QtCore import (
     QEasingCurve,
+    QEvent,
     QPoint,
     QPropertyAnimation,
     QRect,
     Qt,
     QTimer,
 )
-from PySide6.QtGui import QKeyEvent, QMouseEvent
+from PySide6.QtGui import QEnterEvent, QKeyEvent, QMouseEvent
 from PySide6.QtWidgets import (
     QApplication,
     QFrame,
@@ -47,7 +48,7 @@ logger = logging.getLogger(__name__)
 # Gap (px) between bubble and the bottom/left of screen edge
 _MARGIN_X = 16
 _MARGIN_Y = 72  # clear of taskbar (typically 40-48 px high + some breathing room)
-_BUBBLE_WIDTH = 320
+_BUBBLE_WIDTH = 380
 
 
 class NovaBubble(QWidget):
@@ -66,6 +67,7 @@ class NovaBubble(QWidget):
             | Qt.WindowType.NoDropShadowWindowHint,
         )
         self._on_text_submit = on_text_submit
+        self._is_pinned = False
         self._auto_hide_timer = QTimer(self)
         self._auto_hide_timer.setSingleShot(True)
         self._auto_hide_timer.timeout.connect(self.hide_bubble)
@@ -98,15 +100,26 @@ class NovaBubble(QWidget):
         inner.setContentsMargins(14, 10, 14, 10)
         inner.setSpacing(6)
 
-        # ── Header row: state label + close button ──
+        # ── Header row: state label + pin button + close button ──
         header = QHBoxLayout()
+        header.setSpacing(6)
         self._state_label = QLabel("NOVA", self._frame)
         self._state_label.setObjectName("StateLabel")
         header.addWidget(self._state_label)
         header.addStretch()
 
+        self._pin_btn = QPushButton("📌", self._frame)
+        self._pin_btn.setObjectName("PinButton")
+        self._pin_btn.setFixedSize(22, 22)
+        self._pin_btn.setCheckable(True)
+        self._pin_btn.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._pin_btn.clicked.connect(self.toggle_pin)
+        self._pin_btn.setToolTip("Pin bubble (stay open for chat)")
+        header.addWidget(self._pin_btn)
+
         close_btn = QPushButton("✕", self._frame)
-        close_btn.setFixedSize(18, 18)
+        close_btn.setObjectName("CloseButton")
+        close_btn.setFixedSize(22, 22)
         close_btn.setFlat(True)
         close_btn.setCursor(Qt.CursorShape.PointingHandCursor)
         close_btn.clicked.connect(self.hide_bubble)
@@ -151,6 +164,29 @@ class NovaBubble(QWidget):
     def _apply_theme(self) -> None:
         self._frame.setStyleSheet(bubble_stylesheet())
 
+    def toggle_pin(self) -> None:
+        """Toggle pinned state so bubble stays open indefinitely for chat."""
+        self._is_pinned = not self._is_pinned
+        self._pin_btn.setChecked(self._is_pinned)
+        if self._is_pinned:
+            self._auto_hide_timer.stop()
+            self._pin_btn.setToolTip("Unpin bubble (currently pinned open)")
+        else:
+            self._pin_btn.setToolTip("Pin bubble (stay open for chat)")
+            if not self._text_input.hasFocus() and not self.underMouse():
+                self._schedule_hide(delay_ms=8000)
+
+    def enterEvent(self, event: QEnterEvent) -> None:
+        """Cancel auto-hide timer when mouse hovers over bubble."""
+        self._auto_hide_timer.stop()
+        super().enterEvent(event)
+
+    def leaveEvent(self, event: QEvent) -> None:
+        """Resume auto-hide timer when mouse leaves bubble (if unpinned and not typing)."""
+        if not self._is_pinned and not self._text_input.hasFocus():
+            self._schedule_hide(delay_ms=8000)
+        super().leaveEvent(event)
+
     # ─── Public API (called from UI thread via signals) ──────────────────────
 
     def set_state(self, state: str) -> None:
@@ -168,7 +204,7 @@ class NovaBubble(QWidget):
         self._state_label.setText(label_map.get(state, state.upper()))
         self._auto_hide_timer.stop()
         if state == "idle":
-            self._schedule_hide(delay_ms=1500)
+            self._schedule_hide(delay_ms=10000)
         else:
             self.show_bubble()
 
@@ -176,7 +212,6 @@ class NovaBubble(QWidget):
         """Update live transcript text."""
         self._transcript_label.setText(f'"{text}"')
         self._transcript_label.setVisible(bool(text))
-        self._reply_label.setVisible(False)
         self._adjust_height()
 
     def set_reply(self, text: str) -> None:
@@ -184,6 +219,9 @@ class NovaBubble(QWidget):
         self._reply_label.setText(f"▶ {text}")
         self._reply_label.setVisible(bool(text))
         self._adjust_height()
+        delay = max(12000, min(30000, 8000 + len(text) * 45))
+        self._schedule_hide(delay_ms=delay)
+        self._text_input.setFocus()
 
     def clear(self) -> None:
         """Clear transcript and reply content."""
@@ -214,7 +252,9 @@ class NovaBubble(QWidget):
 
     # ─── Private helpers ─────────────────────────────────────────────────────
 
-    def _schedule_hide(self, delay_ms: int = 2500) -> None:
+    def _schedule_hide(self, delay_ms: int = 10000) -> None:
+        if self._is_pinned or self._text_input.hasFocus() or self.underMouse():
+            return
         self._auto_hide_timer.start(delay_ms)
 
     def _on_fade_out_done(self) -> None:
@@ -224,20 +264,23 @@ class NovaBubble(QWidget):
             self._fade_anim.finished.disconnect(self._on_fade_out_done)
 
     def _position_bubble(self) -> None:
-        """Position the bubble at the bottom-left of the primary screen."""
+        """Position the bubble at the bottom-left of the primary screen without geometry oscillation."""
         screen = QApplication.primaryScreen()
         if screen is None:
             return
         available: QRect = screen.availableGeometry()
-        self.adjustSize()
-        h = self.sizeHint().height()
+        lay = self.layout()
+        if lay is not None:
+            lay.activate()
+        hint_h = self.sizeHint().height()
+        target_h = max(110, min(hint_h, 480, available.height() - _MARGIN_Y - 50))
+        self.resize(_BUBBLE_WIDTH, target_h)
         x = available.left() + _MARGIN_X
-        y = available.bottom() - h - _MARGIN_Y
+        y = available.bottom() - target_h - _MARGIN_Y
         self.move(QPoint(x, y))
 
     def _adjust_height(self) -> None:
         """Resize the window after content changes and re-position."""
-        self.adjustSize()
         self._position_bubble()
 
     def _handle_text_submit(self) -> None:
@@ -245,8 +288,11 @@ class NovaBubble(QWidget):
         self._text_input.clear()
         if not text:
             return
+        self._auto_hide_timer.stop()
+        self.set_transcript(text)
         if self._on_text_submit is not None:
             self._on_text_submit(text)
+        self._text_input.setFocus()
 
     def keyPressEvent(self, event: QKeyEvent) -> None:
         if event.key() == Qt.Key.Key_Escape:

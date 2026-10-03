@@ -426,3 +426,26 @@ def test_dev_dataset_evaluation() -> None:
         f"Dev false action rate must be 0.00%, got {false_action_rate:.2f}%"
     )
     assert accuracy >= 98.0, f"Dev accuracy must be >= 98.00%, got {accuracy:.2f}%"
+
+
+def test_tier1_keyboard_intents() -> None:
+    engine = Tier1IntentEngine()
+    req_type = engine.resolve_intent("type hello world")
+    assert req_type is not None
+    assert req_type.action_id == ActionID.KEYBOARD_TYPE.value
+    assert req_type.parameters == {"text": "hello world"}
+
+    req_write = engine.resolve_intent("write this is a test")
+    assert req_write is not None
+    assert req_write.action_id == ActionID.KEYBOARD_TYPE.value
+    assert req_write.parameters == {"text": "this is a test"}
+
+    req_press = engine.resolve_intent("press enter")
+    assert req_press is not None
+    assert req_press.action_id == ActionID.KEYBOARD_PRESS.value
+    assert req_press.parameters == {"key": "enter"}
+
+    req_tab = engine.resolve_intent("press the tab key")
+    assert req_tab is not None
+    assert req_tab.action_id == ActionID.KEYBOARD_PRESS.value
+    assert req_tab.parameters == {"key": "tab"}

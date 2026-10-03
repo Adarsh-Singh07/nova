@@ -151,6 +151,7 @@ class NovaPipeline:
             logger.info("Intent could not be resolved for query: '%s'", text)
             feedback = "I did not understand that command."
             self.state_machine.transition_to(PipelineState.SPEAKING)
+            self.platform.unmute_current_process()
             self.tts.synthesize(feedback)
             self.state_machine.transition_to(PipelineState.IDLE)
             return PipelineTurnResult(
@@ -180,6 +181,7 @@ class NovaPipeline:
                 logger.info("Action '%s' was rejected or timed out.", action_req.action_id)
                 feedback = "Action cancelled."
                 self.state_machine.transition_to(PipelineState.SPEAKING)
+                self.platform.unmute_current_process()
                 self.tts.synthesize(feedback)
                 self.state_machine.transition_to(PipelineState.IDLE)
                 return PipelineTurnResult(
@@ -198,6 +200,7 @@ class NovaPipeline:
         # 5. Spoken Reply reflecting real outcome
         feedback_text = action_res.message if action_res.message else action_req.feedback_phrase
         self.state_machine.transition_to(PipelineState.SPEAKING)
+        self.platform.unmute_current_process()
         self.tts.synthesize(feedback_text)
         self.state_machine.transition_to(PipelineState.IDLE)
 

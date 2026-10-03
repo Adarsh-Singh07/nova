@@ -45,7 +45,16 @@ def test_bubble_initialization_and_text_input(qtbot: Any) -> None:
     assert submitted_texts == ["mute audio"]
     assert bubble._text_input.text() == ""
 
-    # 6. Show and Hide
+    # 6. Pin toggle
+    assert bubble._is_pinned is False
+    bubble.toggle_pin()
+    assert bubble._is_pinned is True
+    assert bubble._pin_btn.isChecked() is True
+    bubble.toggle_pin()
+    assert bubble._is_pinned is False
+    assert bubble._pin_btn.isChecked() is False
+
+    # 7. Show and Hide
     bubble.show_bubble()
     assert bubble.isVisible()
     bubble.hide_bubble()
