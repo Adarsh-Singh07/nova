@@ -728,7 +728,10 @@ class WindowsPlatformAdapter(BasePlatformAdapter):
                     ),
                 )
                 inputs = (Input * 2)(down, up)
-                self._windll.user32.SendInput(2, inputs, ctypes.sizeof(Input))
+                sent = self._windll.user32.SendInput(2, inputs, ctypes.sizeof(Input))
+                if sent != 2 and hasattr(self._windll.user32, "keybd_event"):
+                    self._windll.user32.keybd_event(0, code, KEYEVENTF_UNICODE, 0)
+                    self._windll.user32.keybd_event(0, code, KEYEVENTF_UNICODE | KEYEVENTF_KEYUP, 0)
 
             return ActionResult(
                 success=True,
@@ -796,6 +799,17 @@ class WindowsPlatformAdapter(BasePlatformAdapter):
                     message=f"Pressed {clean_key} key.",
                     data={"key": clean_key, "vk": vk},
                 )
+
+            # Fallback to keybd_event if SendInput did not inject both events (e.g. background sessions)
+            if hasattr(self._windll.user32, "keybd_event"):
+                self._windll.user32.keybd_event(vk, 0, 0, 0)
+                self._windll.user32.keybd_event(vk, 0, KEYEVENTF_KEYUP, 0)
+                return ActionResult(
+                    success=True,
+                    message=f"Pressed {clean_key} key.",
+                    data={"key": clean_key, "vk": vk},
+                )
+
             return ActionResult(
                 success=False,
                 message=f"Failed to press key {clean_key}.",
