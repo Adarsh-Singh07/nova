@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Phase 5: PySide6 Desktop UI with System Tray and Status Overlay.
+  - Persistent system tray application (`NovaTrayIcon`) with dynamic state-aware colored circle icons (grey idle, red listening, amber transcribing, blue thinking, purple acting, green speaking) and native context menu.
+  - Floating status and live transcript bubble (`NovaBubble`) anchored to the bottom-left of the screen with smooth slide and fade animations.
+  - Accessible text input fallback box integrated into the bubble, ensuring full keyboard-driven operation without voice input (Rule R6).
+  - Tabbed settings window (`SettingsWindow`) with dedicated pages for General, Audio, Speech-to-Text, Text-to-Speech, and Action Permissions.
+  - Multi-step first-run onboarding setup wizard (`OnboardingWizard`) guiding microphone selection, local model verification/download, hotkey setup, and destructive action confirmation policies.
+  - Cross-thread Qt signal bridge (`NovaSignals`) and `PipelineWorker` executing audio recording, STT, intent matching, platform execution, and TTS synthesis off the main UI thread (Rule R4).
+  - 120 automated unit and integration tests passing with 81.03% code coverage.
 - Phase 4: Cross-Platform Adapters for Windows 10/11 and Linux.
   - Windows platform adapter (`WindowsPlatformAdapter`) implementing master and per-app volume control via `pycaw`, system mute toggling, non-blocking media key events via `SendInput` with fallback to `WM_APPCOMMAND`, system dark/light theme switching with `WM_SETTINGCHANGE` broadcast via `SendMessageTimeoutW`, non-shell application launching via Windows Start Menu `.lnk` parsing and `os.startfile`, workstation locking via `LockWorkStation`, and suspend via `SetSuspendState`.
   - Linux platform adapter (`LinuxPlatformAdapter`) supporting audio engine runtime detection hierarchy (`wpctl` -> `pactl` -> `amixer`), media playback control via `playerctl` and D-Bus MPRIS2, theme switching across GNOME (`gsettings`) and KDE Plasma (`plasma-apply-lookandfeel`), application launching via XDG Desktop Entry specification (`.desktop`) parsing and non-shell `subprocess.Popen`, screen locking via `loginctl lock-session` with D-Bus Screensaver fallback, and sleep via `systemctl suspend`.

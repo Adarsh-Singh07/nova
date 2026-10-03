@@ -101,7 +101,12 @@ def main(
 
     if ctx.invoked_subcommand is None:
         click.echo("Starting NOVA desktop assistant...")
-        # UI event loop will be launched in Phase 5
+        import os
+
+        if os.environ.get("NOVA_HEADLESS") != "1":
+            from nova.ui import run_ui
+
+            run_ui()
 
 
 @main.command()

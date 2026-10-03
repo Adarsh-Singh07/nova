@@ -105,6 +105,9 @@ class GeneralSettings(BaseModel):
     locale: str = Field(default="en", description="User interface language code.")
     start_minimized: bool = Field(default=True, description="Start minimized in system tray.")
     launch_at_startup: bool = Field(default=False, description="Launch NOVA on OS boot.")
+    onboarding_complete: bool = Field(
+        default=False, description="Whether first-run onboarding has been completed."
+    )
 
 
 class AppSettings(BaseModel):

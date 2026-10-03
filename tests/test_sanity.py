@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pytest
 from click.testing import CliRunner
 
 import nova
@@ -48,8 +49,9 @@ def test_cli_text_mode_failure() -> None:
     assert "[NOVA] Status:" in result.output
 
 
-def test_cli_default_invocation() -> None:
+def test_cli_default_invocation(monkeypatch: pytest.MonkeyPatch) -> None:
     """Verify default CLI launch triggers desktop assistant startup message."""
+    monkeypatch.setattr("nova.ui.run_ui", lambda: None)
     runner = CliRunner()
     result = runner.invoke(main, [])
     assert result.exit_code == 0
