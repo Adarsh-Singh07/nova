@@ -101,10 +101,17 @@ class PipelineWorker(QThread):
             tts=self._tts,
             platform=platform,
             settings=self._settings_mgr.settings,
+            on_reply_ready=self._signals.reply_ready.emit,
         )
 
     def run(self) -> None:
         self._init_pipeline()
+        try:
+            self._player.play_array(np.zeros((1000, 2), dtype=np.float32), 44100, blocking=True)
+            get_platform_adapter().unmute_current_process()
+        except Exception as e:
+            logger.debug("Failed initial audio session ping: %s", e)
+
         while not self._stop_event:
             try:
                 item_type, data = self._queue.get(timeout=0.2)

@@ -220,3 +220,17 @@ def test_pipeline_error_handling(
     assert "Engine hardware failure" in str(res.error)
     assert any("error occurred" in p for p in tts.synthesized_phrases)
     assert sm.current_state == PipelineState.IDLE
+
+
+def test_pipeline_on_reply_ready_callback() -> None:
+    emitted_replies: list[str] = []
+    tts = FakeTTSEngine()
+    pipeline = NovaPipeline(
+        tts=tts,
+        on_reply_ready=emitted_replies.append,
+    )
+    res = pipeline.process_text("turn volume up")
+    assert res.success is True
+    assert len(emitted_replies) == 1
+    assert "volume" in emitted_replies[0].lower()
+    assert len(tts.spoken_phrases) == 1
