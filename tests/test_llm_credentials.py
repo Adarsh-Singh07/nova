@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from unittest.mock import patch
 
+import pytest
+
 from nova.core.actions import ActionID
 from nova.core.fakes import (
     FakeConfirmationHandler,
@@ -26,7 +28,7 @@ from nova.llm.credentials import (
 )
 
 
-def test_credentials_functions(monkeypatch) -> None:
+def test_credentials_functions(monkeypatch: pytest.MonkeyPatch) -> None:
     # Test Agnes base url & model
     assert get_agnes_base_url() == "https://apihub.agnes-ai.com/v1"
     assert get_agnes_model() == "agnes-3.0-flash"

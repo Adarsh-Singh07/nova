@@ -107,8 +107,11 @@ def test_live_engine_streaming_events() -> None:
         call.args = {"direction": "down"}
         msg_tool.tool_call = MagicMock(function_calls=[call])
 
+        from collections.abc import AsyncIterator
+        from typing import Any
+
         # Async generator simulating session.receive()
-        async def mock_receive():
+        async def mock_receive() -> AsyncIterator[Any]:
             yield msg_audio
             yield msg_tx
             yield msg_int
@@ -119,10 +122,15 @@ def test_live_engine_streaming_events() -> None:
         mock_session.send_tool_response = AsyncMock()
 
         class MockContextManager:
-            async def __aenter__(self):
+            async def __aenter__(self) -> Any:
                 return mock_session
 
-            async def __aexit__(self, exc_type, exc_val, exc_tb):
+            async def __aexit__(
+                self,
+                exc_type: type[BaseException] | None,
+                exc_val: BaseException | None,
+                exc_tb: Any,
+            ) -> None:
                 pass
 
         mock_client = MagicMock()
