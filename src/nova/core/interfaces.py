@@ -79,6 +79,10 @@ class TTSEngineProtocol(Protocol):
         """Synthesize text into raw WAV/PCM audio bytes."""
         ...
 
+    def speak(self, text: str, voice: str | None = None, blocking: bool = False) -> None:
+        """Synthesize text and play audio aloud through output speakers."""
+        ...
+
     def stop(self) -> None:
         """Immediately abort any active speech synthesis and playback."""
         ...

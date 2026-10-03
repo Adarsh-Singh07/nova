@@ -77,3 +77,15 @@ def test_piper_engine_synthesis_fallback(tmp_path: Path) -> None:
     # Stop calls player stop
     engine.stop()
     player.stop.assert_called_once()
+
+
+def test_piper_engine_default_player(tmp_path: Path) -> None:
+    cache = TTSDiskCache(cache_dir=tmp_path / "cache")
+    voice_mgr = PiperVoiceManager(models_dir=tmp_path / "models")
+    engine = PiperEngine(voice_manager=voice_mgr, cache=cache)
+    assert engine.player is not None
+    assert engine.player.on_play_callback is not None
+    # Test unmute hook executes safely
+    engine.player.on_play_callback()
+    assert not engine.is_available()
+

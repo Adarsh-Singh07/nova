@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import logging
 import urllib.parse
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
@@ -53,6 +54,7 @@ class NovaPipeline:
         platform: PlatformAdapterProtocol | None = None,
         settings: NovaSettings | None = None,
         confirmation_handler: ConfirmationHandlerProtocol | None = None,
+        on_reply_ready: Callable[[str], None] | None = None,
         *,
         stt_engine: STTEngineProtocol | None = None,
         tts_engine: TTSEngineProtocol | None = None,
@@ -72,6 +74,35 @@ class NovaPipeline:
         self.intent_engine = intent_engine or FakeIntentEngine()
         self.settings = settings or NovaSettings()
         self.confirmation_handler = confirmation_handler
+        self._on_reply_ready = on_reply_ready
+
+    def _emit_reply(self, text: str) -> None:
+        """Notify listeners (e.g. UI bubble) immediately when reply text is ready."""
+        if self._on_reply_ready is not None and text:
+            try:
+                self._on_reply_ready(text)
+            except Exception as e:
+                logger.debug("Error in on_reply_ready callback: %s", e)
+
+    def _speak(self, text: str) -> None:
+        """Play feedback aloud via TTSEngine, managing state and unmuting."""
+        if not text:
+            return
+        self.state_machine.transition_to(PipelineState.SPEAKING)
+        try:
+            self.platform.unmute_current_process()
+        except Exception:
+            logger.debug("Failed to unmute current process", exc_info=True)
+
+        try:
+            if hasattr(self.tts, "speak"):
+                self.tts.speak(text, blocking=True)
+            else:
+                self.tts.synthesize(text)
+        except Exception as e:
+            logger.warning("TTS speech execution failed: %s", e)
+        finally:
+            self.state_machine.transition_to(PipelineState.IDLE)
 
     def process_audio(self, audio_data: np.ndarray[Any, Any]) -> PipelineTurnResult:
         """Execute a full turn starting from raw audio PCM data."""
@@ -150,10 +181,8 @@ class NovaPipeline:
         if action_req is None:
             logger.info("Intent could not be resolved for query: '%s'", text)
             feedback = "I did not understand that command."
-            self.state_machine.transition_to(PipelineState.SPEAKING)
-            self.platform.unmute_current_process()
-            self.tts.synthesize(feedback)
-            self.state_machine.transition_to(PipelineState.IDLE)
+            self._emit_reply(feedback)
+            self._speak(feedback)
             return PipelineTurnResult(
                 query=text,
                 action_request=None,
@@ -180,10 +209,8 @@ class NovaPipeline:
             if not confirmed:
                 logger.info("Action '%s' was rejected or timed out.", action_req.action_id)
                 feedback = "Action cancelled."
-                self.state_machine.transition_to(PipelineState.SPEAKING)
-                self.platform.unmute_current_process()
-                self.tts.synthesize(feedback)
-                self.state_machine.transition_to(PipelineState.IDLE)
+                self._emit_reply(feedback)
+                self._speak(feedback)
                 return PipelineTurnResult(
                     query=text,
                     action_request=action_req,
@@ -199,10 +226,8 @@ class NovaPipeline:
 
         # 5. Spoken Reply reflecting real outcome
         feedback_text = action_res.message if action_res.message else action_req.feedback_phrase
-        self.state_machine.transition_to(PipelineState.SPEAKING)
-        self.platform.unmute_current_process()
-        self.tts.synthesize(feedback_text)
-        self.state_machine.transition_to(PipelineState.IDLE)
+        self._emit_reply(feedback_text)
+        self._speak(feedback_text)
 
         return PipelineTurnResult(
             query=text,
@@ -341,9 +366,8 @@ class NovaPipeline:
         error_msg = "An error occurred while processing your request."
         try:
             self.state_machine.transition_to(PipelineState.ERROR)
-            self.state_machine.transition_to(PipelineState.SPEAKING)
-            self.tts.synthesize(error_msg)
-            self.state_machine.transition_to(PipelineState.IDLE)
+            self._emit_reply(error_msg)
+            self._speak(error_msg)
         except Exception:
             self.state_machine.reset()
 

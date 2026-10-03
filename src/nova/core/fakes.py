@@ -209,12 +209,17 @@ class FakeTTSEngine(TTSEngineProtocol):
 
     def __init__(self) -> None:
         self.synthesized_phrases: list[str] = []
+        self.spoken_phrases: list[str] = []
         self.stop_called_count: int = 0
 
     def synthesize(self, text: str, voice: str | None = None) -> bytes:
         self.synthesized_phrases.append(text)
         # Return a mock 44-byte standard RIFF/WAV header
         return b"RIFF$\x00\x00\x00WAVEfmt \x10\x00\x00\x00\x01\x00\x01\x00\x80>\x00\x00\x00}\x00\x00\x02\x00\x10\x00data\x00\x00\x00\x00"
+
+    def speak(self, text: str, voice: str | None = None, blocking: bool = False) -> None:
+        self.spoken_phrases.append(text)
+        self.synthesize(text, voice)
 
     def stop(self) -> None:
         self.stop_called_count += 1

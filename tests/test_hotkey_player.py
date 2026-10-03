@@ -115,3 +115,32 @@ def test_audio_player_invalid_wav() -> None:
     player = AudioPlayer()
     with pytest.raises(RuntimeError, match="Audio playback error"):
         player.play_wav(b"not a valid wav")
+
+
+def test_audio_player_on_play_callback(monkeypatch: pytest.MonkeyPatch) -> None:
+    mock_play = MagicMock()
+    mock_wait = MagicMock()
+    monkeypatch.setattr("sounddevice.play", mock_play)
+    monkeypatch.setattr("sounddevice.wait", mock_wait)
+
+    callback_called = False
+
+    def on_play() -> None:
+        nonlocal callback_called
+        callback_called = True
+
+    player = AudioPlayer(on_play_callback=on_play)
+    player.play_array(np.zeros(160, dtype=np.float32), blocking=False)
+    assert callback_called is True
+    assert mock_play.called
+
+
+def test_audio_player_generic_exception(monkeypatch: pytest.MonkeyPatch) -> None:
+    def bad_play(*args: Any, **kwargs: Any) -> None:
+        raise ValueError("Unexpected driver crash")
+
+    monkeypatch.setattr("sounddevice.play", bad_play)
+    player = AudioPlayer()
+    with pytest.raises(RuntimeError, match="Audio device playback error"):
+        player.play_array(np.zeros(160, dtype=np.float32))
+    assert not player.is_playing

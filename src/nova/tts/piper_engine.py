@@ -169,7 +169,17 @@ class PiperEngine(TTSEngineProtocol):
         self.default_voice = default_voice
         self.voice_manager = voice_manager or PiperVoiceManager()
         self.cache = cache or TTSDiskCache()
-        self.player = player or AudioPlayer()
+        if player is None:
+
+            def _unmute_hook() -> None:
+                with contextlib.suppress(Exception):
+                    from nova.platform import get_platform_adapter
+
+                    get_platform_adapter().unmute_current_process()
+
+            self.player = AudioPlayer(on_play_callback=_unmute_hook)
+        else:
+            self.player = player
 
         self._piper_voice: Any = None
         self._loaded_voice_name: str | None = None

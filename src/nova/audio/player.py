@@ -6,10 +6,12 @@ immediate cancellation support.
 
 from __future__ import annotations
 
+import contextlib
 import io
 import logging
 import threading
 import wave
+from collections.abc import Callable
 from typing import Any
 
 import numpy as np
@@ -21,8 +23,13 @@ logger = logging.getLogger(__name__)
 class AudioPlayer:
     """Non-blocking audio player supporting WAV bytes and NumPy PCM arrays."""
 
-    def __init__(self, output_device_name_or_index: str | int | None = None) -> None:
+    def __init__(
+        self,
+        output_device_name_or_index: str | int | None = None,
+        on_play_callback: Callable[[], None] | None = None,
+    ) -> None:
         self.device = output_device_name_or_index
+        self.on_play_callback = on_play_callback
         self._is_playing = False
         self._lock = threading.RLock()
 
@@ -85,8 +92,21 @@ class AudioPlayer:
                 device=self.device,
                 blocking=blocking,
             )
+            if self.on_play_callback is not None:
+                with contextlib.suppress(Exception):
+                    self.on_play_callback()
+
             if blocking:
                 _finished_callback()
+            else:
+
+                def _wait_and_finish() -> None:
+                    with contextlib.suppress(Exception):
+                        sd.wait()
+                    with self._lock:
+                        self._is_playing = False
+
+                threading.Thread(target=_wait_and_finish, daemon=True).start()
         except sd.PortAudioError as e:
             with self._lock:
                 self._is_playing = False

@@ -830,12 +830,24 @@ class WindowsPlatformAdapter(BasePlatformAdapter):
         try:
             pid = os.getpid()
             for session in AudioUtilities.GetAllSessions():
-                if session.Process and session.ProcessId == pid:
-                    vol = getattr(session, "SimpleAudioVolume", None)
-                    if vol is not None:
-                        if vol.GetMute():
-                            vol.SetMute(0, None)
-                        if vol.GetMasterVolume() < 0.5:
-                            vol.SetMasterVolume(1.0, None)
+                if session.Process:
+                    proc_name = session.Process.name().lower()
+                    if session.ProcessId == pid or proc_name in (
+                        "python.exe",
+                        "pythonw.exe",
+                        "nova.exe",
+                    ):
+                        vol = getattr(session, "SimpleAudioVolume", None)
+                        if vol is not None:
+                            try:
+                                if vol.GetMute():
+                                    vol.SetMute(0, None)
+                            except Exception:
+                                pass
+                            try:
+                                if vol.GetMasterVolume() < 0.99:
+                                    vol.SetMasterVolume(1.0, None)
+                            except Exception:
+                                pass
         except Exception:
             logger.debug("Failed to check or unmute current process volume", exc_info=True)
