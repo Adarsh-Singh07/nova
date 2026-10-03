@@ -107,6 +107,28 @@ class GeneralSettings(BaseModel):
     launch_at_startup: bool = Field(default=False, description="Launch NOVA on OS boot.")
 
 
+class AppSettings(BaseModel):
+    """Application management and user-configurable alias mappings."""
+
+    aliases: dict[str, str] = Field(
+        default_factory=lambda: {
+            "code": "Visual Studio Code",
+            "vscode": "Visual Studio Code",
+            "browser": "Google Chrome",
+            "chrome": "Google Chrome",
+            "terminal": "Windows Terminal",
+            "calculator": "Calculator",
+            "calc": "Calculator",
+            "spotify": "Spotify",
+            "slack": "Slack",
+            "notepad": "Notepad",
+            "files": "File Explorer",
+            "explorer": "File Explorer",
+        },
+        description="User-customizable mappings from spoken aliases to system application names.",
+    )
+
+
 class NovaSettings(BaseModel):
     """Root configuration model for NOVA."""
 
@@ -116,6 +138,7 @@ class NovaSettings(BaseModel):
     tts: TTSSettings = Field(default_factory=TTSSettings)
     security: SecuritySettings = Field(default_factory=SecuritySettings)
     llm: LLMSettings = Field(default_factory=LLMSettings)
+    apps: AppSettings = Field(default_factory=AppSettings)
 
 
 class SettingsManager:

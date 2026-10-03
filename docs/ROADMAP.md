@@ -11,7 +11,7 @@ This document outlines the phased engineering milestones from initial repository
 | **Phase 0** | **Repo Foundation** | ✅ Completed | Scaffolding, verified dependencies, CI matrix, licensing, and linters. |
 | **Phase 1** | **Core Pipeline with Fakes** | ✅ Completed | FSM state machine, typed Protocols, fake STT/TTS, settings, and CLI `--text`. |
 | **Phase 2** | **Audio + STT + TTS** | ✅ Completed | Real mic stream via `sounddevice`, Silero VAD, `faster-whisper`, Piper TTS, and `nova doctor`. |
-| **Phase 3** | **Intent Engine (Tier 1)** | ⏳ Queued | Deterministic pattern parser, compound commands, numbers, RapidFuzz app matching, 300+ phrase tests. |
+| **Phase 3** | **Intent Engine (Tier 1)** | ✅ Completed | Deterministic pattern parser, compound commands, numbers, RapidFuzz app matching, 300+ phrase tests. |
 | **Phase 4** | **Platform Adapters** | ⏳ Queued | Windows 10/11 & Linux contract implementations (volume, media keys, sleep, lock, theme, apps). |
 | **Phase 5** | **UI (PySide6)** | ⏳ Queued | System tray icon with state colors, floating transcript bubble, settings window, onboarding wizard. |
 | **Phase 6** | **Optional Tier 2 LLM Tier** | ⏳ Queued | Ollama, Gemini, OpenRouter, Anthropic, OpenAI adapters with strict JSON schema and injection defense. |

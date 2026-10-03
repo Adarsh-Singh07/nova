@@ -8,6 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Phase 3: Tier 1 Deterministic Intent Engine.
+  - Zero-latency (<1ms) regex and pattern-based deterministic intent engine (`Tier1IntentEngine`) parsing 23 distinct OS and utility intents with zero cloud dependency.
+  - Conversational chatter rejection, negation filtering ("don't lock the PC"), and non-command idiom disambiguation ("volume of a sphere", "play it by ear").
+  - Compound command parser (`split_compound_commands`) with strict two-half validation guarantee (preventing accidental splitting on phrases like "search salt and pepper").
+  - RapidFuzz-backed application registry (`AppRegistry`) with fuzzy matching, ambiguity margin thresholding (10-point gap), and user-customizable alias mapping.
+  - Colloquial number and duration parsing (`parse_number`, `parse_duration`) handling multi-unit combinations and spoken fractions.
+  - Safety gates requiring high confidence (>=0.85) and R5.5 confirmation flow for destructive actions (lock, sleep, close app, quit).
+  - Frozen held-out (206 samples) and dev (108 samples) evaluation suites achieving 100.00% accuracy, 0.00% False-Action Rate on non-commands, and 1.00 precision/recall across all intent classes.
 - Phase 2: Real Audio capture, STT, and TTS subsystems.
   - Real microphone audio capture via `sounddevice` with device enumeration, automatic fallback, and polyphase software resampling to 16kHz mono.
   - Energy Voice Activity Detection (`EnergyVAD`) with dynamic ambient noise floor tracking and speech utterance segmenter (`VADSegmenter`).
