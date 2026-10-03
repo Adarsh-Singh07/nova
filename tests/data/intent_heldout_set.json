@@ -1,0 +1,1408 @@
+[
+  {
+    "query": "set volume to 40",
+    "expected_intent": "volume.set",
+    "expected_params": {
+      "percent": 40
+    },
+    "category": "volume_set"
+  },
+  {
+    "query": "set the volume to sixty",
+    "expected_intent": "volume.set",
+    "expected_params": {
+      "percent": 60
+    },
+    "category": "volume_set"
+  },
+  {
+    "query": "volume 90",
+    "expected_intent": "volume.set",
+    "expected_params": {
+      "percent": 90
+    },
+    "category": "volume_set"
+  },
+  {
+    "query": "turn volume to 15 percent",
+    "expected_intent": "volume.set",
+    "expected_params": {
+      "percent": 15
+    },
+    "category": "volume_set"
+  },
+  {
+    "query": "adjust volume to eighty percent",
+    "expected_intent": "volume.set",
+    "expected_params": {
+      "percent": 80
+    },
+    "category": "volume_set"
+  },
+  {
+    "query": "make volume one hundred",
+    "expected_intent": "volume.set",
+    "expected_params": {
+      "percent": 100
+    },
+    "category": "volume_set"
+  },
+  {
+    "query": "set sound to twenty five",
+    "expected_intent": "volume.set",
+    "expected_params": {
+      "percent": 25
+    },
+    "category": "volume_set"
+  },
+  {
+    "query": "volume fifty percent",
+    "expected_intent": "volume.set",
+    "expected_params": {
+      "percent": 50
+    },
+    "category": "volume_set"
+  },
+  {
+    "query": "nova set volume to ten",
+    "expected_intent": "volume.set",
+    "expected_params": {
+      "percent": 10
+    },
+    "category": "volume_set"
+  },
+  {
+    "query": "please set volume to zero",
+    "expected_intent": "volume.set",
+    "expected_params": {
+      "percent": 0
+    },
+    "category": "volume_set"
+  },
+  {
+    "query": "change master volume to 65",
+    "expected_intent": "volume.set",
+    "expected_params": {
+      "percent": 65
+    },
+    "category": "volume_set"
+  },
+  {
+    "query": "set audio to forty five",
+    "expected_intent": "volume.set",
+    "expected_params": {
+      "percent": 45
+    },
+    "category": "volume_set"
+  },
+  {
+    "query": "volume up",
+    "expected_intent": "volume.up",
+    "expected_params": {},
+    "category": "volume_up"
+  },
+  {
+    "query": "turn volume up",
+    "expected_intent": "volume.up",
+    "expected_params": {},
+    "category": "volume_up"
+  },
+  {
+    "query": "turn it up",
+    "expected_intent": "volume.up",
+    "expected_params": {},
+    "category": "volume_up"
+  },
+  {
+    "query": "make it louder",
+    "expected_intent": "volume.up",
+    "expected_params": {},
+    "category": "volume_up"
+  },
+  {
+    "query": "increase the volume",
+    "expected_intent": "volume.up",
+    "expected_params": {},
+    "category": "volume_up"
+  },
+  {
+    "query": "raise volume",
+    "expected_intent": "volume.up",
+    "expected_params": {},
+    "category": "volume_up"
+  },
+  {
+    "query": "boost volume please",
+    "expected_intent": "volume.up",
+    "expected_params": {},
+    "category": "volume_up"
+  },
+  {
+    "query": "can you turn it up",
+    "expected_intent": "volume.up",
+    "expected_params": {},
+    "category": "volume_up"
+  },
+  {
+    "query": "a little louder",
+    "expected_intent": "volume.up",
+    "expected_params": {},
+    "category": "volume_up"
+  },
+  {
+    "query": "volume down",
+    "expected_intent": "volume.down",
+    "expected_params": {},
+    "category": "volume_down"
+  },
+  {
+    "query": "turn volume down",
+    "expected_intent": "volume.down",
+    "expected_params": {},
+    "category": "volume_down"
+  },
+  {
+    "query": "turn it down",
+    "expected_intent": "volume.down",
+    "expected_params": {},
+    "category": "volume_down"
+  },
+  {
+    "query": "quieter please",
+    "expected_intent": "volume.down",
+    "expected_params": {},
+    "category": "volume_down"
+  },
+  {
+    "query": "make it quieter",
+    "expected_intent": "volume.down",
+    "expected_params": {},
+    "category": "volume_down"
+  },
+  {
+    "query": "decrease the volume",
+    "expected_intent": "volume.down",
+    "expected_params": {},
+    "category": "volume_down"
+  },
+  {
+    "query": "lower volume",
+    "expected_intent": "volume.down",
+    "expected_params": {},
+    "category": "volume_down"
+  },
+  {
+    "query": "soften sound",
+    "expected_intent": "volume.down",
+    "expected_params": {},
+    "category": "volume_down"
+  },
+  {
+    "query": "drop the volume",
+    "expected_intent": "volume.down",
+    "expected_params": {},
+    "category": "volume_down"
+  },
+  {
+    "query": "mute",
+    "expected_intent": "volume.mute_toggle",
+    "expected_params": {},
+    "category": "volume_mute"
+  },
+  {
+    "query": "unmute",
+    "expected_intent": "volume.mute_toggle",
+    "expected_params": {},
+    "category": "volume_mute"
+  },
+  {
+    "query": "mute audio",
+    "expected_intent": "volume.mute_toggle",
+    "expected_params": {},
+    "category": "volume_mute"
+  },
+  {
+    "query": "mute the sound",
+    "expected_intent": "volume.mute_toggle",
+    "expected_params": {},
+    "category": "volume_mute"
+  },
+  {
+    "query": "toggle mute",
+    "expected_intent": "volume.mute_toggle",
+    "expected_params": {},
+    "category": "volume_mute"
+  },
+  {
+    "query": "silence the speakers",
+    "expected_intent": "volume.mute_toggle",
+    "expected_params": {},
+    "category": "volume_mute"
+  },
+  {
+    "query": "unmute sound",
+    "expected_intent": "volume.mute_toggle",
+    "expected_params": {},
+    "category": "volume_mute"
+  },
+  {
+    "query": "set spotify volume to 40",
+    "expected_intent": "volume.app_set",
+    "expected_params": {
+      "app_name": "spotify",
+      "percent": 40,
+      "direction": "set"
+    },
+    "category": "volume_app"
+  },
+  {
+    "query": "mute discord",
+    "expected_intent": "volume.app_set",
+    "expected_params": {
+      "app_name": "discord",
+      "direction": "mute"
+    },
+    "category": "volume_app"
+  },
+  {
+    "query": "turn down chrome volume",
+    "expected_intent": "volume.app_set",
+    "expected_params": {
+      "app_name": "chrome",
+      "direction": "down"
+    },
+    "category": "volume_app"
+  },
+  {
+    "query": "turn up vlc volume",
+    "expected_intent": "volume.app_set",
+    "expected_params": {
+      "app_name": "vlc",
+      "direction": "up"
+    },
+    "category": "volume_app"
+  },
+  {
+    "query": "set slack volume to zero",
+    "expected_intent": "volume.app_set",
+    "expected_params": {
+      "app_name": "slack",
+      "percent": 0,
+      "direction": "set"
+    },
+    "category": "volume_app"
+  },
+  {
+    "query": "play",
+    "expected_intent": "media.play_pause",
+    "expected_params": {},
+    "category": "media_play_pause"
+  },
+  {
+    "query": "pause",
+    "expected_intent": "media.play_pause",
+    "expected_params": {},
+    "category": "media_play_pause"
+  },
+  {
+    "query": "resume",
+    "expected_intent": "media.play_pause",
+    "expected_params": {},
+    "category": "media_play_pause"
+  },
+  {
+    "query": "pause music",
+    "expected_intent": "media.play_pause",
+    "expected_params": {},
+    "category": "media_play_pause"
+  },
+  {
+    "query": "play song",
+    "expected_intent": "media.play_pause",
+    "expected_params": {},
+    "category": "media_play_pause"
+  },
+  {
+    "query": "resume music",
+    "expected_intent": "media.play_pause",
+    "expected_params": {},
+    "category": "media_play_pause"
+  },
+  {
+    "query": "toggle playback",
+    "expected_intent": "media.play_pause",
+    "expected_params": {},
+    "category": "media_play_pause"
+  },
+  {
+    "query": "stop the music",
+    "expected_intent": "media.play_pause",
+    "expected_params": {},
+    "category": "media_play_pause"
+  },
+  {
+    "query": "unpause the music",
+    "expected_intent": "media.play_pause",
+    "expected_params": {},
+    "category": "media_play_pause"
+  },
+  {
+    "query": "next",
+    "expected_intent": "media.next",
+    "expected_params": {},
+    "category": "media_next"
+  },
+  {
+    "query": "next track",
+    "expected_intent": "media.next",
+    "expected_params": {},
+    "category": "media_next"
+  },
+  {
+    "query": "next song",
+    "expected_intent": "media.next",
+    "expected_params": {},
+    "category": "media_next"
+  },
+  {
+    "query": "skip song",
+    "expected_intent": "media.next",
+    "expected_params": {},
+    "category": "media_next"
+  },
+  {
+    "query": "skip track",
+    "expected_intent": "media.next",
+    "expected_params": {},
+    "category": "media_next"
+  },
+  {
+    "query": "play next track",
+    "expected_intent": "media.next",
+    "expected_params": {},
+    "category": "media_next"
+  },
+  {
+    "query": "previous",
+    "expected_intent": "media.previous",
+    "expected_params": {},
+    "category": "media_previous"
+  },
+  {
+    "query": "previous track",
+    "expected_intent": "media.previous",
+    "expected_params": {},
+    "category": "media_previous"
+  },
+  {
+    "query": "previous song",
+    "expected_intent": "media.previous",
+    "expected_params": {},
+    "category": "media_previous"
+  },
+  {
+    "query": "go back a track",
+    "expected_intent": "media.previous",
+    "expected_params": {},
+    "category": "media_previous"
+  },
+  {
+    "query": "last song",
+    "expected_intent": "media.previous",
+    "expected_params": {},
+    "category": "media_previous"
+  },
+  {
+    "query": "lock",
+    "expected_intent": "system.lock",
+    "expected_params": {},
+    "is_destructive": true,
+    "category": "system_lock"
+  },
+  {
+    "query": "lock pc",
+    "expected_intent": "system.lock",
+    "expected_params": {},
+    "is_destructive": true,
+    "category": "system_lock"
+  },
+  {
+    "query": "lock computer",
+    "expected_intent": "system.lock",
+    "expected_params": {},
+    "is_destructive": true,
+    "category": "system_lock"
+  },
+  {
+    "query": "lock screen",
+    "expected_intent": "system.lock",
+    "expected_params": {},
+    "is_destructive": true,
+    "category": "system_lock"
+  },
+  {
+    "query": "lock workstation",
+    "expected_intent": "system.lock",
+    "expected_params": {},
+    "is_destructive": true,
+    "category": "system_lock"
+  },
+  {
+    "query": "lock the computer please",
+    "expected_intent": "system.lock",
+    "expected_params": {},
+    "is_destructive": true,
+    "category": "system_lock"
+  },
+  {
+    "query": "sleep",
+    "expected_intent": "system.sleep",
+    "expected_params": {},
+    "is_destructive": true,
+    "category": "system_sleep"
+  },
+  {
+    "query": "suspend",
+    "expected_intent": "system.sleep",
+    "expected_params": {},
+    "is_destructive": true,
+    "category": "system_sleep"
+  },
+  {
+    "query": "put pc to sleep",
+    "expected_intent": "system.sleep",
+    "expected_params": {},
+    "is_destructive": true,
+    "category": "system_sleep"
+  },
+  {
+    "query": "put computer to sleep",
+    "expected_intent": "system.sleep",
+    "expected_params": {},
+    "is_destructive": true,
+    "category": "system_sleep"
+  },
+  {
+    "query": "suspend the system",
+    "expected_intent": "system.sleep",
+    "expected_params": {},
+    "is_destructive": true,
+    "category": "system_sleep"
+  },
+  {
+    "query": "open code",
+    "expected_intent": "app.launch",
+    "expected_params": {
+      "app_name": "Visual Studio Code"
+    },
+    "category": "app_launch"
+  },
+  {
+    "query": "launch vscode",
+    "expected_intent": "app.launch",
+    "expected_params": {
+      "app_name": "Visual Studio Code"
+    },
+    "category": "app_launch"
+  },
+  {
+    "query": "start browser",
+    "expected_intent": "app.launch",
+    "expected_params": {
+      "app_name": "Google Chrome"
+    },
+    "category": "app_launch"
+  },
+  {
+    "query": "open chrome",
+    "expected_intent": "app.launch",
+    "expected_params": {
+      "app_name": "Google Chrome"
+    },
+    "category": "app_launch"
+  },
+  {
+    "query": "launch terminal",
+    "expected_intent": "app.launch",
+    "expected_params": {
+      "app_name": "Windows Terminal"
+    },
+    "category": "app_launch"
+  },
+  {
+    "query": "open calculator",
+    "expected_intent": "app.launch",
+    "expected_params": {
+      "app_name": "Calculator"
+    },
+    "category": "app_launch"
+  },
+  {
+    "query": "launch calc",
+    "expected_intent": "app.launch",
+    "expected_params": {
+      "app_name": "Calculator"
+    },
+    "category": "app_launch"
+  },
+  {
+    "query": "open spotify",
+    "expected_intent": "app.launch",
+    "expected_params": {
+      "app_name": "Spotify"
+    },
+    "category": "app_launch"
+  },
+  {
+    "query": "start notepad",
+    "expected_intent": "app.launch",
+    "expected_params": {
+      "app_name": "Notepad"
+    },
+    "category": "app_launch"
+  },
+  {
+    "query": "open file explorer",
+    "expected_intent": "app.launch",
+    "expected_params": {
+      "app_name": "File Explorer"
+    },
+    "category": "app_launch"
+  },
+  {
+    "query": "close slack",
+    "expected_intent": "app.close",
+    "expected_params": {
+      "app_name": "Slack"
+    },
+    "is_destructive": true,
+    "category": "app_close"
+  },
+  {
+    "query": "quit spotify",
+    "expected_intent": "app.close",
+    "expected_params": {
+      "app_name": "Spotify"
+    },
+    "is_destructive": true,
+    "category": "app_close"
+  },
+  {
+    "query": "close notepad",
+    "expected_intent": "app.close",
+    "expected_params": {
+      "app_name": "Notepad"
+    },
+    "is_destructive": true,
+    "category": "app_close"
+  },
+  {
+    "query": "quit calculator",
+    "expected_intent": "app.close",
+    "expected_params": {
+      "app_name": "Calculator"
+    },
+    "is_destructive": true,
+    "category": "app_close"
+  },
+  {
+    "query": "terminate terminal",
+    "expected_intent": "app.close",
+    "expected_params": {
+      "app_name": "Windows Terminal"
+    },
+    "is_destructive": true,
+    "category": "app_close"
+  },
+  {
+    "query": "dark mode",
+    "expected_intent": "system.dark_mode_toggle",
+    "expected_params": {},
+    "category": "appearance"
+  },
+  {
+    "query": "toggle dark mode",
+    "expected_intent": "system.dark_mode_toggle",
+    "expected_params": {},
+    "category": "appearance"
+  },
+  {
+    "query": "switch to dark mode",
+    "expected_intent": "system.dark_mode_toggle",
+    "expected_params": {},
+    "category": "appearance"
+  },
+  {
+    "query": "light mode",
+    "expected_intent": "system.dark_mode_toggle",
+    "expected_params": {},
+    "category": "appearance"
+  },
+  {
+    "query": "toggle light mode",
+    "expected_intent": "system.dark_mode_toggle",
+    "expected_params": {},
+    "category": "appearance"
+  },
+  {
+    "query": "switch theme",
+    "expected_intent": "system.dark_mode_toggle",
+    "expected_params": {},
+    "category": "appearance"
+  },
+  {
+    "query": "toggle dark theme",
+    "expected_intent": "system.dark_mode_toggle",
+    "expected_params": {},
+    "category": "appearance"
+  },
+  {
+    "query": "set a timer for 10 minutes",
+    "expected_intent": "productivity.timer_set",
+    "expected_params": {
+      "duration_seconds": 600.0
+    },
+    "category": "timer"
+  },
+  {
+    "query": "timer 5 minutes",
+    "expected_intent": "productivity.timer_set",
+    "expected_params": {
+      "duration_seconds": 300.0
+    },
+    "category": "timer"
+  },
+  {
+    "query": "set a timer for 30 seconds",
+    "expected_intent": "productivity.timer_set",
+    "expected_params": {
+      "duration_seconds": 30.0
+    },
+    "category": "timer"
+  },
+  {
+    "query": "timer one hour",
+    "expected_intent": "productivity.timer_set",
+    "expected_params": {
+      "duration_seconds": 3600.0
+    },
+    "category": "timer"
+  },
+  {
+    "query": "timer twenty five minutes",
+    "expected_intent": "productivity.timer_set",
+    "expected_params": {
+      "duration_seconds": 1500.0
+    },
+    "category": "timer"
+  },
+  {
+    "query": "set timer for half an hour",
+    "expected_intent": "productivity.timer_set",
+    "expected_params": {
+      "duration_seconds": 1800.0
+    },
+    "category": "timer"
+  },
+  {
+    "query": "timer two minutes and thirty seconds",
+    "expected_intent": "productivity.timer_set",
+    "expected_params": {
+      "duration_seconds": 150.0
+    },
+    "category": "timer"
+  },
+  {
+    "query": "set timer for forty five seconds",
+    "expected_intent": "productivity.timer_set",
+    "expected_params": {
+      "duration_seconds": 45.0
+    },
+    "category": "timer"
+  },
+  {
+    "query": "start stopwatch",
+    "expected_intent": "productivity.stopwatch_start",
+    "expected_params": {},
+    "category": "stopwatch"
+  },
+  {
+    "query": "begin stopwatch",
+    "expected_intent": "productivity.stopwatch_start",
+    "expected_params": {},
+    "category": "stopwatch"
+  },
+  {
+    "query": "stop stopwatch",
+    "expected_intent": "productivity.stopwatch_stop",
+    "expected_params": {},
+    "category": "stopwatch"
+  },
+  {
+    "query": "pause stopwatch",
+    "expected_intent": "productivity.stopwatch_stop",
+    "expected_params": {},
+    "category": "stopwatch"
+  },
+  {
+    "query": "reset stopwatch",
+    "expected_intent": "productivity.stopwatch_reset",
+    "expected_params": {},
+    "category": "stopwatch"
+  },
+  {
+    "query": "clear stopwatch",
+    "expected_intent": "productivity.stopwatch_reset",
+    "expected_params": {},
+    "category": "stopwatch"
+  },
+  {
+    "query": "stopwatch status",
+    "expected_intent": "productivity.stopwatch_status",
+    "expected_params": {},
+    "category": "stopwatch"
+  },
+  {
+    "query": "how much time on stopwatch",
+    "expected_intent": "productivity.stopwatch_status",
+    "expected_params": {},
+    "category": "stopwatch"
+  },
+  {
+    "query": "remind me to call John in 20 minutes",
+    "expected_intent": "productivity.reminder_set",
+    "expected_params": {
+      "text": "call John",
+      "seconds": 1200.0
+    },
+    "category": "reminder"
+  },
+  {
+    "query": "set a reminder to check oven in 10 minutes",
+    "expected_intent": "productivity.reminder_set",
+    "expected_params": {
+      "text": "check oven",
+      "seconds": 600.0
+    },
+    "category": "reminder"
+  },
+  {
+    "query": "remind me to drink water in fifteen minutes",
+    "expected_intent": "productivity.reminder_set",
+    "expected_params": {
+      "text": "drink water",
+      "seconds": 900.0
+    },
+    "category": "reminder"
+  },
+  {
+    "query": "set reminder to submit report in one hour",
+    "expected_intent": "productivity.reminder_set",
+    "expected_params": {
+      "text": "submit report",
+      "seconds": 3600.0
+    },
+    "category": "reminder"
+  },
+  {
+    "query": "take a note buy groceries tomorrow",
+    "expected_intent": "productivity.note_append",
+    "expected_params": {
+      "text": "buy groceries tomorrow"
+    },
+    "category": "note"
+  },
+  {
+    "query": "note that meeting rescheduled to Monday",
+    "expected_intent": "productivity.note_append",
+    "expected_params": {
+      "text": "meeting rescheduled to Monday"
+    },
+    "category": "note"
+  },
+  {
+    "query": "write this down call dentist",
+    "expected_intent": "productivity.note_append",
+    "expected_params": {
+      "text": "call dentist"
+    },
+    "category": "note"
+  },
+  {
+    "query": "add a note remember the laptop charger",
+    "expected_intent": "productivity.note_append",
+    "expected_params": {
+      "text": "remember the laptop charger"
+    },
+    "category": "note"
+  },
+  {
+    "query": "open github.com",
+    "expected_intent": "web.open_url",
+    "expected_params": {
+      "url": "https://github.com"
+    },
+    "category": "web_url"
+  },
+  {
+    "query": "go to reddit.com",
+    "expected_intent": "web.open_url",
+    "expected_params": {
+      "url": "https://reddit.com"
+    },
+    "category": "web_url"
+  },
+  {
+    "query": "open https://news.ycombinator.com",
+    "expected_intent": "web.open_url",
+    "expected_params": {
+      "url": "https://news.ycombinator.com"
+    },
+    "category": "web_url"
+  },
+  {
+    "query": "visit youtube.com",
+    "expected_intent": "web.open_url",
+    "expected_params": {
+      "url": "https://youtube.com"
+    },
+    "category": "web_url"
+  },
+  {
+    "query": "open python.org",
+    "expected_intent": "web.open_url",
+    "expected_params": {
+      "url": "https://python.org"
+    },
+    "category": "web_url"
+  },
+  {
+    "query": "search for rust vs python",
+    "expected_intent": "web.search",
+    "expected_params": {
+      "query": "rust vs python"
+    },
+    "category": "web_search"
+  },
+  {
+    "query": "google distance to mars",
+    "expected_intent": "web.search",
+    "expected_params": {
+      "query": "distance to mars"
+    },
+    "category": "web_search"
+  },
+  {
+    "query": "search quantum computing basics",
+    "expected_intent": "web.search",
+    "expected_params": {
+      "query": "quantum computing basics"
+    },
+    "category": "web_search"
+  },
+  {
+    "query": "look up weather in Paris",
+    "expected_intent": "web.search",
+    "expected_params": {
+      "query": "weather in Paris"
+    },
+    "category": "web_search"
+  },
+  {
+    "query": "search for open source LLM benchmarks",
+    "expected_intent": "web.search",
+    "expected_params": {
+      "query": "open source LLM benchmarks"
+    },
+    "category": "web_search"
+  },
+  {
+    "query": "pause the music and open slack",
+    "expected_intent": "compound",
+    "expected_sub_intents": [
+      "media.play_pause",
+      "app.launch"
+    ],
+    "category": "compound_split"
+  },
+  {
+    "query": "turn volume up and lock workstation",
+    "expected_intent": "compound",
+    "expected_sub_intents": [
+      "volume.up",
+      "system.lock"
+    ],
+    "category": "compound_split"
+  },
+  {
+    "query": "set volume to 40 then open spotify",
+    "expected_intent": "compound",
+    "expected_sub_intents": [
+      "volume.set",
+      "app.launch"
+    ],
+    "category": "compound_split"
+  },
+  {
+    "query": "mute audio & put pc to sleep",
+    "expected_intent": "compound",
+    "expected_sub_intents": [
+      "volume.mute_toggle",
+      "system.sleep"
+    ],
+    "category": "compound_split"
+  },
+  {
+    "query": "play music and launch terminal",
+    "expected_intent": "compound",
+    "expected_sub_intents": [
+      "media.play_pause",
+      "app.launch"
+    ],
+    "category": "compound_split"
+  },
+  {
+    "query": "close slack and lock screen",
+    "expected_intent": "compound",
+    "expected_sub_intents": [
+      "app.close",
+      "system.lock"
+    ],
+    "category": "compound_split"
+  },
+  {
+    "query": "search salt and pepper",
+    "expected_intent": "web.search",
+    "expected_params": {
+      "query": "salt and pepper"
+    },
+    "category": "compound_non_split"
+  },
+  {
+    "query": "play rock and roll",
+    "expected_intent": "media.play_pause",
+    "category": "compound_non_split"
+  },
+  {
+    "query": "open notes and reminders",
+    "expected_intent": "app.launch",
+    "expected_params": {
+      "app_name": "notes and reminders"
+    },
+    "category": "compound_non_split"
+  },
+  {
+    "query": "search for Tom and Jerry",
+    "expected_intent": "web.search",
+    "expected_params": {
+      "query": "Tom and Jerry"
+    },
+    "category": "compound_non_split"
+  },
+  {
+    "query": "google fish and chips recipe",
+    "expected_intent": "web.search",
+    "expected_params": {
+      "query": "fish and chips recipe"
+    },
+    "category": "compound_non_split"
+  },
+  {
+    "query": "take a note buy bread and butter",
+    "expected_intent": "productivity.note_append",
+    "expected_params": {
+      "text": "buy bread and butter"
+    },
+    "category": "compound_non_split"
+  },
+  {
+    "query": "I locked my keys in the car",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "what's the volume of a sphere",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "what is the volume of a cylinder",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "play it by ear",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "let's pause and think about this",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "can you close the window it's cold",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "he quit his job last month",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "she quit playing piano",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "the movie was next level",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "that is a moot point",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "sleep is important for memory",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "I had a dream about space",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "turn up the heat in the room",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "turn down the heating",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "lock ness monster is a myth",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "sleepy hollow is a classic tale",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "note to self life is good",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "time flies when you are having fun",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "remind me why we came here",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "search your feelings Luke",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "start from scratch",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "stop making so much noise",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "reset your mindset",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "I need to buy a padlock",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "tell me about sleep apnea",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "the dark mode of human psychology",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "the volume of sales increased this quarter",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "pause for effect",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "next year in Jerusalem",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "previous generations worked hard",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_non_command"
+  },
+  {
+    "query": "don't lock the PC",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_negation"
+  },
+  {
+    "query": "do not lock the computer",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_negation"
+  },
+  {
+    "query": "do not mute",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_negation"
+  },
+  {
+    "query": "don't mute the sound",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_negation"
+  },
+  {
+    "query": "never put the computer to sleep",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_negation"
+  },
+  {
+    "query": "don't sleep yet",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_negation"
+  },
+  {
+    "query": "don't pause the music",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_negation"
+  },
+  {
+    "query": "do not stop the track",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_negation"
+  },
+  {
+    "query": "stop asking me to open slack",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_negation"
+  },
+  {
+    "query": "never close this application",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_negation"
+  },
+  {
+    "query": "do not close chrome",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_negation"
+  },
+  {
+    "query": "don't turn down the volume",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_negation"
+  },
+  {
+    "query": "do not start stopwatch",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_negation"
+  },
+  {
+    "query": "don't set any timers",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_negation"
+  },
+  {
+    "query": "never toggle dark mode",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_negation"
+  },
+  {
+    "query": "Hey Jeff",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_acoustic"
+  },
+  {
+    "query": "Hey Nathan",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_acoustic"
+  },
+  {
+    "query": "Nova Scotia",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_acoustic"
+  },
+  {
+    "query": "Bossa Nova is relaxing",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_acoustic"
+  },
+  {
+    "query": "Supernova explosion in space",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_acoustic"
+  },
+  {
+    "query": "Mute button is broken",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_acoustic"
+  },
+  {
+    "query": "Turn it upside down",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_acoustic"
+  },
+  {
+    "query": "I want to sleep early tonight",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_acoustic"
+  },
+  {
+    "query": "Can we lock the front door",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_acoustic"
+  },
+  {
+    "query": "Who is playing tonight",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_acoustic"
+  },
+  {
+    "query": "hello there",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_chatter"
+  },
+  {
+    "query": "how are you today",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_chatter"
+  },
+  {
+    "query": "good morning",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_chatter"
+  },
+  {
+    "query": "what is the capital of France",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_chatter"
+  },
+  {
+    "query": "who was Albert Einstein",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_chatter"
+  },
+  {
+    "query": "tell me a joke",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_chatter"
+  },
+  {
+    "query": "why is the sky blue",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_chatter"
+  },
+  {
+    "query": "what time is it in Tokyo",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_chatter"
+  },
+  {
+    "query": "how tall is Mount Everest",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_chatter"
+  },
+  {
+    "query": "what is your name",
+    "expected_intent": null,
+    "expected_params": {},
+    "category": "negative_chatter"
+  }
+]

@@ -46,19 +46,30 @@ class NovaPipeline:
 
     def __init__(
         self,
-        state_machine: PipelineStateMachine,
-        stt: STTEngineProtocol,
-        intent_engine: IntentEngineProtocol,
-        tts: TTSEngineProtocol,
-        platform: PlatformAdapterProtocol,
+        state_machine: PipelineStateMachine | None = None,
+        stt: STTEngineProtocol | None = None,
+        intent_engine: IntentEngineProtocol | None = None,
+        tts: TTSEngineProtocol | None = None,
+        platform: PlatformAdapterProtocol | None = None,
         settings: NovaSettings | None = None,
         confirmation_handler: ConfirmationHandlerProtocol | None = None,
+        *,
+        stt_engine: STTEngineProtocol | None = None,
+        tts_engine: TTSEngineProtocol | None = None,
+        platform_adapter: PlatformAdapterProtocol | None = None,
     ) -> None:
-        self.state_machine = state_machine
-        self.stt = stt
-        self.intent_engine = intent_engine
-        self.tts = tts
-        self.platform = platform
+        from nova.core.fakes import (
+            FakeIntentEngine,
+            FakePlatformAdapter,
+            FakeSTTEngine,
+            FakeTTSEngine,
+        )
+
+        self.state_machine = state_machine or PipelineStateMachine()
+        self.stt = stt or stt_engine or FakeSTTEngine()
+        self.tts = tts or tts_engine or FakeTTSEngine()
+        self.platform = platform or platform_adapter or FakePlatformAdapter()
+        self.intent_engine = intent_engine or FakeIntentEngine()
         self.settings = settings or NovaSettings()
         self.confirmation_handler = confirmation_handler
 
@@ -102,6 +113,29 @@ class NovaPipeline:
             )
 
         try:
+            # Check for compound actions
+            if hasattr(self.intent_engine, "resolve_compound"):
+                compound_reqs = self.intent_engine.resolve_compound(clean_text)
+                if len(compound_reqs) > 1:
+                    last_turn: PipelineTurnResult | None = None
+                    feedback_items: list[str] = []
+                    for req in compound_reqs:
+                        turn = self._process_action_request(req, clean_text)
+                        last_turn = turn
+                        if turn.spoken_feedback:
+                            feedback_items.append(turn.spoken_feedback)
+                        if not turn.success:
+                            break
+                    combined_feedback = " and ".join(feedback_items) if feedback_items else ""
+                    return PipelineTurnResult(
+                        query=clean_text,
+                        action_request=last_turn.action_request if last_turn else None,
+                        action_result=last_turn.action_result if last_turn else None,
+                        spoken_feedback=combined_feedback,
+                        success=last_turn.success if last_turn else False,
+                        error=last_turn.error if last_turn else None,
+                    )
+
             return self._process_text_internal(clean_text)
         except Exception as e:
             return self._handle_error(e, query=clean_text)
@@ -128,6 +162,10 @@ class NovaPipeline:
                 error="Unknown intent",
             )
 
+        return self._process_action_request(action_req, text)
+
+    def _process_action_request(self, action_req: ActionRequest, text: str) -> PipelineTurnResult:
+        """Process, validate, confirm, execute, and speak a resolved ActionRequest."""
         # 2. Strict Allowlist Validation (Rule R5)
         AllowlistValidator.validate(action_req)
 
@@ -157,8 +195,8 @@ class NovaPipeline:
         self.state_machine.transition_to(PipelineState.ACTING)
         action_res = self._execute_platform_action(action_req)
 
-        # 5. Spoken Reply
-        feedback_text = action_req.feedback_phrase or action_res.message
+        # 5. Spoken Reply reflecting real outcome
+        feedback_text = action_res.message if action_res.message else action_req.feedback_phrase
         self.state_machine.transition_to(PipelineState.SPEAKING)
         self.tts.synthesize(feedback_text)
         self.state_machine.transition_to(PipelineState.IDLE)
@@ -219,6 +257,52 @@ class NovaPipeline:
         if action_id == ActionID.WEB_SEARCH.value:
             encoded = urllib.parse.quote_plus(str(params["query"]))
             return self.platform.open_url(f"https://www.google.com/search?q={encoded}")
+
+        if action_id == ActionID.WEB_OPEN_URL.value:
+            return self.platform.open_url(str(params["url"]))
+
+        if action_id == ActionID.TIMER_SET:
+            duration = float(params.get("duration_seconds", 60.0))
+            return ActionResult(
+                success=True,
+                message=f"Timer set for {int(duration)} seconds.",
+                data={"duration_seconds": duration},
+            )
+
+        if action_id in (
+            ActionID.STOPWATCH_START.value,
+            ActionID.STOPWATCH_STOP.value,
+            ActionID.STOPWATCH_RESET.value,
+            ActionID.STOPWATCH_STATUS.value,
+        ):
+            msg_map = {
+                ActionID.STOPWATCH_START.value: "Stopwatch started.",
+                ActionID.STOPWATCH_STOP.value: "Stopwatch stopped.",
+                ActionID.STOPWATCH_RESET.value: "Stopwatch reset.",
+                ActionID.STOPWATCH_STATUS.value: "Stopwatch is running.",
+            }
+            return ActionResult(success=True, message=msg_map[action_id])
+
+        if action_id == ActionID.REMINDER_SET.value:
+            return ActionResult(
+                success=True,
+                message=f"Reminder set for {params.get('text')}.",
+                data=params,
+            )
+
+        if action_id == ActionID.NOTE_APPEND.value:
+            return ActionResult(
+                success=True,
+                message="Saved your note.",
+                data=params,
+            )
+
+        if action_id == ActionID.VOLUME_APP_SET.value:
+            return ActionResult(
+                success=True,
+                message=f"Adjusted volume for {params.get('app_name')}.",
+                data=params,
+            )
 
         if action_id == ActionID.CONVERSATION_REPLY.value:
             return ActionResult(

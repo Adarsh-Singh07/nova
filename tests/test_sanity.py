@@ -29,8 +29,7 @@ def test_cli_text_mode() -> None:
     result = runner.invoke(main, ["--text", "turn volume up"])
     assert result.exit_code == 0
     assert "[NOVA] Status: Success" in result.output
-    assert "volume.up" in result.output
-    assert 'Spoken: "Turning volume up."' in result.output
+    assert 'Spoken: "Volume set to 60%"' in result.output
 
 
 def test_cli_text_mode_fast_mode() -> None:

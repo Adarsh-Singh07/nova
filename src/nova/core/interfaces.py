@@ -43,6 +43,11 @@ class ActionResult:
     data: dict[str, Any] = field(default_factory=dict)
     error: str | None = None
 
+    @property
+    def ok(self) -> bool:
+        """Idiomatic alias for success to support ok/message checks."""
+        return self.success
+
 
 @runtime_checkable
 class STTEngineProtocol(Protocol):

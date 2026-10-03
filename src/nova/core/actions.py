@@ -22,6 +22,7 @@ class ActionID(StrEnum):
     VOLUME_UP = "volume.up"
     VOLUME_DOWN = "volume.down"
     VOLUME_MUTE_TOGGLE = "volume.mute_toggle"
+    VOLUME_APP_SET = "volume.app_set"
 
     # Media Controls
     MEDIA_PLAY_PAUSE = "media.play_pause"
@@ -41,8 +42,14 @@ class ActionID(StrEnum):
 
     # Productivity & Utilities
     TIMER_SET = "productivity.timer_set"
+    STOPWATCH_START = "productivity.stopwatch_start"
+    STOPWATCH_STOP = "productivity.stopwatch_stop"
+    STOPWATCH_RESET = "productivity.stopwatch_reset"
+    STOPWATCH_STATUS = "productivity.stopwatch_status"
+    REMINDER_SET = "productivity.reminder_set"
     NOTE_APPEND = "productivity.note_append"
     WEB_SEARCH = "web.search"
+    WEB_OPEN_URL = "web.open_url"
     CONVERSATION_REPLY = "conversation.reply"
 
 
@@ -102,14 +109,20 @@ class AllowlistValidator:
         # Action-specific parameter contract validation
         if action_enum == ActionID.VOLUME_SET:
             cls._validate_volume_set(params)
+        elif action_enum == ActionID.VOLUME_APP_SET:
+            cls._validate_volume_app_set(params)
         elif action_enum in (ActionID.APP_LAUNCH, ActionID.APP_CLOSE):
             cls._validate_app_name(params)
         elif action_enum == ActionID.TIMER_SET:
             cls._validate_timer(params)
+        elif action_enum == ActionID.REMINDER_SET:
+            cls._validate_reminder(params)
         elif action_enum == ActionID.NOTE_APPEND:
             cls._validate_note(params)
         elif action_enum == ActionID.WEB_SEARCH:
             cls._validate_search(params)
+        elif action_enum == ActionID.WEB_OPEN_URL:
+            cls._validate_open_url(params)
 
     @staticmethod
     def _validate_volume_set(params: dict[str, Any]) -> None:
@@ -120,6 +133,24 @@ class AllowlistValidator:
             raise ActionValidationError(
                 f"Volume percent must be an integer between 0 and 100, got: {percent}"
             )
+
+    @staticmethod
+    def _validate_volume_app_set(params: dict[str, Any]) -> None:
+        if "app_name" not in params or not isinstance(params["app_name"], str):
+            raise ActionValidationError("volume.app_set requires a string 'app_name' parameter.")
+        app_name = params["app_name"].strip()
+        if not app_name or not re.match(r"^[\w\s\.\-]+$", app_name):
+            raise ActionValidationError(f"Invalid application name: '{app_name}'")
+
+        if "percent" in params and params["percent"] is not None:
+            percent = params["percent"]
+            if not isinstance(percent, int) or not (0 <= percent <= 100):
+                raise ActionValidationError(f"Percent must be 0-100, got: {percent}")
+
+        if "direction" in params and params["direction"] is not None:
+            direction = params["direction"]
+            if direction not in ("up", "down", "mute", "set"):
+                raise ActionValidationError(f"Invalid direction: '{direction}'")
 
     @staticmethod
     def _validate_app_name(params: dict[str, Any]) -> None:
@@ -143,6 +174,17 @@ class AllowlistValidator:
             raise ActionValidationError(f"Timer duration must be positive, got: {duration}")
 
     @staticmethod
+    def _validate_reminder(params: dict[str, Any]) -> None:
+        if "text" not in params or not isinstance(params["text"], str):
+            raise ActionValidationError("reminder_set requires a string 'text' parameter.")
+        if not params["text"].strip():
+            raise ActionValidationError("Reminder text cannot be empty.")
+        if "seconds" in params and params["seconds"] is not None:
+            seconds = params["seconds"]
+            if not isinstance(seconds, (int, float)) or seconds <= 0:
+                raise ActionValidationError(f"Reminder seconds must be positive, got: {seconds}")
+
+    @staticmethod
     def _validate_note(params: dict[str, Any]) -> None:
         if "text" not in params or not isinstance(params["text"], str):
             raise ActionValidationError("note_append requires a string 'text' parameter.")
@@ -155,3 +197,11 @@ class AllowlistValidator:
             raise ActionValidationError("web.search requires a string 'query' parameter.")
         if not params["query"].strip():
             raise ActionValidationError("Search query cannot be empty.")
+
+    @staticmethod
+    def _validate_open_url(params: dict[str, Any]) -> None:
+        if "url" not in params or not isinstance(params["url"], str):
+            raise ActionValidationError("web.open_url requires a string 'url' parameter.")
+        url = params["url"].strip()
+        if not url.startswith(("http://", "https://")):
+            raise ActionValidationError(f"URL must start with http:// or https://, got: '{url}'")
