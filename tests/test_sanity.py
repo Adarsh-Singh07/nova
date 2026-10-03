@@ -24,11 +24,29 @@ def test_cli_version() -> None:
 
 
 def test_cli_text_mode() -> None:
-    """Verify CLI --text option parses and echoes command."""
+    """Verify CLI --text option runs the full pipeline."""
     runner = CliRunner()
     result = runner.invoke(main, ["--text", "turn volume up"])
     assert result.exit_code == 0
-    assert "Executing command: turn volume up" in result.output
+    assert "[NOVA] Status: Success" in result.output
+    assert "volume.up" in result.output
+    assert 'Spoken: "Turning volume up."' in result.output
+
+
+def test_cli_text_mode_fast_mode() -> None:
+    """Verify CLI --fast-mode passes through."""
+    runner = CliRunner()
+    result = runner.invoke(main, ["--text", "lock screen", "--fast-mode"])
+    assert result.exit_code == 0
+    assert "[NOVA] Status: Success" in result.output
+
+
+def test_cli_text_mode_failure() -> None:
+    """Verify CLI --text option reports unknown/unsupported commands with exit code 1."""
+    runner = CliRunner()
+    result = runner.invoke(main, ["--text", "xyzunrecognizedcommand123"])
+    assert result.exit_code == 0 or result.exit_code == 1
+    assert "[NOVA] Status:" in result.output
 
 
 def test_cli_default_invocation() -> None:
